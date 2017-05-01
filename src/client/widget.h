@@ -21,9 +21,6 @@ private slots:
     // 登陆
     void Login();
 
-    // 注册
-    void Signup();
-
 private:
     // 初始化UI界面
     void InitUi();

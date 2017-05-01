@@ -25,19 +25,26 @@ debug {
   DEFINES += __DEBUG__
 }
 
+HEADERS += \
+        src/socket.h \
+        src/protocol.h
 Client{
     UI_DIR = ./ui
 
     DEFINES += __CLIENT__
 
     SOURCES += \
-        src/client/*.cpp
-
+        src/client/client.cpp \
+        src/client/widget.cpp \
+        src/client/main.cpp
 
     HEADERS += \
-        src/client/*.h
+        src/client/client.h \
+        src/client/widget.h \
+        src/include/json.hpp
 
-    FORMS    +=
+    FORMS    += \
+        src/client/widget.ui
 }
 
 Server{
@@ -50,8 +57,3 @@ Server{
         src/client/*.h
 
 }
-
-
-
-
-

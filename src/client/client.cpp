@@ -1,6 +1,5 @@
 ﻿#include "client.h"
-#include "include/json.hpp"
-#include "../define.h"
+#include "src/include/json.hpp"
 
 using namespace Connor_Socket;
 
