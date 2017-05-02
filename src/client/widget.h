@@ -20,6 +20,10 @@ public:
 private slots:
     // 登陆
     void Login();
+    void Cancel();
+
+signals:
+    void toPanel();
 
 private:
     // 初始化UI界面

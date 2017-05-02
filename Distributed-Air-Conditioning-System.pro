@@ -27,7 +27,8 @@ debug {
 
 HEADERS += \
         src/socket.h \
-        src/protocol.h
+        src/protocol.h \
+    src/client/conditionorattr.h
 Client{
     UI_DIR = ./ui
 
@@ -36,15 +37,18 @@ Client{
     SOURCES += \
         src/client/client.cpp \
         src/client/widget.cpp \
-        src/client/main.cpp
+        src/client/main.cpp \
+        src/client/panel.cpp
 
     HEADERS += \
         src/client/client.h \
         src/client/widget.h \
-        src/include/json.hpp
+        src/include/json.hpp \
+        src/client/panel.h
 
     FORMS    += \
-        src/client/widget.ui
+        src/client/widget.ui \
+        src/client/panel.ui
 }
 
 Server{

@@ -26,7 +26,7 @@
    <string>Widget</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images.qrc">
+   <iconset>
     <normaloff>:/ball</normaloff>:/ball</iconset>
   </property>
   <property name="autoFillBackground">
@@ -118,7 +118,7 @@
              <string notr="true">color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
-             <string>帐号</string>
+             <string>Room </string>
             </property>
            </widget>
           </item>
@@ -139,7 +139,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLineEdit" name="usernameEdit">
+           <widget class="QLineEdit" name="RoomEdit">
             <property name="font">
              <font>
               <family>微软雅黑</family>
@@ -171,7 +171,7 @@
              <string notr="true">color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
-             <string>密码</string>
+             <string>ID        </string>
             </property>
            </widget>
           </item>
@@ -192,7 +192,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLineEdit" name="passwordEdit">
+           <widget class="QLineEdit" name="IDEdit">
             <property name="font">
              <font>
               <family>微软雅黑</family>
@@ -252,7 +252,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="signupButtion">
+           <widget class="QPushButton" name="cancelButtion">
             <property name="focusPolicy">
              <enum>Qt::NoFocus</enum>
             </property>
@@ -260,7 +260,7 @@
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>注册</string>
+             <string>Cancel</string>
             </property>
             <property name="flat">
              <bool>false</bool>
@@ -276,7 +276,7 @@
              <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
-             <string>登陆</string>
+             <string>Log In</string>
             </property>
            </widget>
           </item>
@@ -322,8 +322,6 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="images.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
