@@ -28,7 +28,9 @@ debug {
 HEADERS += \
         src/socket.h \
         src/protocol.h \
-    src/client/conditionorattr.h
+        src/include/json.hpp \
+        socket.h
+
 Client{
     UI_DIR = ./ui
 
@@ -43,8 +45,8 @@ Client{
     HEADERS += \
         src/client/client.h \
         src/client/widget.h \
-        src/include/json.hpp \
-        src/client/panel.h
+        src/client/panel.h \
+        src/client/conditionorattr.h
 
     FORMS    += \
         src/client/widget.ui \
@@ -55,9 +57,16 @@ Server{
     DEFINES += __SERVER__
 
     SOURCES += \
-        src/server/*.cpp
+        src/server/dispatch.cpp \
+        src/server/server.cpp \
+        src/server/main.cpp \
+        src/include/sqlite3.c
 
     HEADERS += \
-        src/client/*.h
+        src/server/dispatch.h \
+        src/server/ormlite.h \
+        src/server/server.h \
+        src/include/sqlite3.h \
+        src/model/*.h
 
 }

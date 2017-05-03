@@ -5,7 +5,6 @@
 #include <set>
 
 #include "../socket.h"
-#include "../model/userinfo.h"
 
 namespace Connor_Socket {
 

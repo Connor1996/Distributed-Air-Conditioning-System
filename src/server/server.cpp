@@ -1,8 +1,8 @@
 ﻿#include "server.h"
 
 #include "dispatch.h"
-#include "../define.h"
-#include "include/json.hpp"
+#include "../protocol.h"
+#include "../include/json.hpp"
 
 using namespace Connor_Socket;
 using json = nlohmann::json;
@@ -65,7 +65,7 @@ Server::Server() : _count(0)
                         // 保证cout完整执行而不被其他线程打断
                         mtx.lock();
                         // 若是在线状态，下线处理
-                        if (dispatcher.getState() == LOG_IN_SUCCESS)
+                        if (dispatcher.getState() == LOG_IN_SUCC)
                             dispatcher.Logout();
                         cout << "[INFO] Someone offline, now " << --_count << " connections in total" << endl;
                         mtx.unlock();

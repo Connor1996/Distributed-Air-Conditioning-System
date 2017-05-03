@@ -1,7 +1,7 @@
 ﻿#ifndef ORMLITE_H
 #define ORMLITE_H
 
-#include "include/sqlite3.h"
+#include "../include/sqlite3.h"
 
 #include <iostream>
 #include <string>
