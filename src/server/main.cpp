@@ -1,19 +1,15 @@
-﻿#include <iostream>
-#include "server.h"
-
+﻿#include "login.h"
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
+    QApplication a(argc, argv);
+    Widget* w(new Widget());
+    //Panel* p(new Panel());
+    w->show();
 
-    std::cout << "this is server" << std::endl;
-    try
-    {
-        Connor_Socket::Server server;
-    }
-    catch (std::exception e)
-    {
-        std::cout << e.what() << std::endl;
-    }
+    //QObject::connect(w, SIGNAL(toPanel()), p, SLOT(Show()));
+    //QObject::connect(p, SIGNAL(toLogIn()), w, SLOT(show()));
 
-    return 0;
+    return a.exec();
 }

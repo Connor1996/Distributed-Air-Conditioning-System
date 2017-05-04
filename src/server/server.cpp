@@ -110,6 +110,7 @@ Server::~Server()
 {
     shutdown(_listeningSocket, SD_BOTH);
     closesocket(_listeningSocket);
+
 }
 
 bool Server::Online(std::string username, Dispatcher* connection)

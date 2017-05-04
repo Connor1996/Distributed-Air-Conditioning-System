@@ -29,8 +29,9 @@ HEADERS += \
         src/protocol.h \
         src/include/json.hpp
 
+UI_DIR = ./ui
+
 Client{
-    UI_DIR = ./ui
 
     DEFINES += __CLIENT__
 
@@ -58,13 +59,17 @@ Server{
         src/server/dispatch.cpp \
         src/server/server.cpp \
         src/server/main.cpp \
-        src/include/sqlite3.c
+        src/include/sqlite3.c \
+        src/server/login.cpp
 
     HEADERS += \
         src/server/dispatch.h \
         src/server/ormlite.h \
         src/server/server.h \
         src/include/sqlite3.h \
-        src/model/*.h
+        src/model/*.h \
+        src/server/login.h
 
+    FORMS += \
+        src/server/login.ui
 }

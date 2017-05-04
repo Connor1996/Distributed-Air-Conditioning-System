@@ -19,9 +19,9 @@ unsigned int Random(int max)
    errno_t err;
    unsigned int number;
    err = rand_s(&number);
-   if(err != 0)
+   if (err != 0)
    {
-     return 0;
+        return 0;
    }
    return (unsigned int)((double)number / ((double)UINT_MAX + 1) * double(max)) + 1;
 }
