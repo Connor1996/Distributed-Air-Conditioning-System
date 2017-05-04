@@ -45,7 +45,7 @@ Temporary Items
 # Qt Project
 *debug
 *release
-*ui
+ui
 *user
 Makefile
 
