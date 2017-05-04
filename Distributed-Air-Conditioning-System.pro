@@ -11,9 +11,8 @@ Client {
 }
 
 Server {
-    CONFIG += console c++14
-    CONFIG -= app_bundle
-    CONFIG -= qt
+    QT       += core gui
+    CONFIG += c++14
 }
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

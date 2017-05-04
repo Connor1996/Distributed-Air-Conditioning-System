@@ -15,7 +15,8 @@ namespace Connor_Socket {
 struct State {
     bool isOn;
     bool isHeatMode;
-    int temperature;
+    int setTemperature;
+    int realTemperature;
     int speed;
 };
 

@@ -81,27 +81,27 @@ json Dispatcher::LoginHandle(json &requestInfo)
 
 json Dispatcher::UpdateSettingHandle(json &requestInfo)
 {
-    // 从控机更改设置：工作模式、设定温度、风速大小
-    // int op = REQ_UPDATE
-    // bool is_heat_mode
-    // int temp
-    // int speed = 1..3
-
     _state.isHeatMode = requestInfo["is_heat_mode"].get<bool>();
-    _state.temperature = requestInfo["temp"].get<int>();
+    _state.setTemperature = requestInfo["temp"].get<int>();
     _state.speed = requestInfo["speed"].get<int>();
 
-    json responseInfo;
-//    = {
-//            {"ret", REPLY_CON},
-//            {"is_valid", _state.isHeatMode == _parent->_setting.isHeatMode}
-//        };
+    json responseInfo = {
+        {"ret", REPLY_CON},
+        {"is_valid", _state.isHeatMode == _parent->GetSetting().isHeatMode}
+    };
+
     return responseInfo;
 }
 
 json Dispatcher::StateHandle(json &requestInfo)
 {
-    json responseInfo;
+    _state.realTemperature = requestInfo["real_temp"].get<int>();
+    json responseInfo = {
+        {"ret", REPLY_MONEY},
+        {"money", 0},
+        {"power", 0}
+    };
+
     return responseInfo;
 }
 

@@ -9,6 +9,11 @@
 // 前置声明解决相互包含
 class Dispatcher;
 
+struct Setting {
+    bool isHeatMode;
+    int setTemperature;
+};
+
 namespace Connor_Socket {
 
 class Server : Socket
@@ -36,6 +41,12 @@ public:
     // @return:
     //      装载有所有在线用户名的list
     std::list<std::string> GetOnlineList();
+
+
+    struct Setting GetSetting() {
+        return _setting;
+    }
+
 protected:
     // 监听客户端访问的socket
     SOCKET _listeningSocket;
@@ -51,10 +62,7 @@ protected:
 
     int _count;
 
-    struct {
-        bool is_heat_mode;
-        int set_temperature;
-    } _setting;
+    Setting _setting;
 };
 
 }
