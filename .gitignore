@@ -46,5 +46,6 @@ Temporary Items
 *debug
 *release
 *ui
+*user
 Makefile
-*.user
+
