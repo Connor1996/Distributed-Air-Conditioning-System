@@ -22,18 +22,14 @@ Management::Management(QWidget *parent) :
         _server = new Server();
     });
 
-    _rooms.emplace(std::make_pair("417", "wangxiaoyu"));
+
 }
 
 Management::~Management()
 {
     delete ui;
-<<<<<<< HEAD
     delete _server;
-    delete thread;
-=======
-    //delete tempChangeTimer;
->>>>>>> 67bd98dd7e69c52f64f0725424eb050033580e87
+    //delete thread;
 }
 
 void Management::Show() {

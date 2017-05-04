@@ -9,7 +9,7 @@
 #include <unordered_set>
 
 using namespace ORMLite;
-
+using std::cout;
 #include <QMessageBox>
 std::string Dispatcher::Dispatch(json requestInfo)
 {
@@ -17,23 +17,22 @@ std::string Dispatcher::Dispatch(json requestInfo)
     // 根据请求信息内容，转到相应的处理逻辑
     switch (requestInfo["op"].get<int>()) {
     case LOG_IN_USER:
-
         responseInfo = LoginHandle(requestInfo);
         break;
     case REQ_STOP:
-        QMessageBox::information(this, "info", "stop");
+        cout << "stop";
         _state.isOn = false;
         break;
     case REQ_RESUME:
-        QMessageBox::information(this, "info", "resume");
+        cout << "resume";
         _state.isOn = true;
         break;
     case REQ_UPDATE:
-        QMessageBox::information(this, "info", "update");
+        cout << "update";
         responseInfo = UpdateSettingHandle(requestInfo);
         break;
     case REPORT_STATE:
-        QMessageBox::information(this, "info", "state");
+        cout << "state";
         responseInfo = StateHandle(requestInfo);
         break;
     default:
@@ -47,18 +46,21 @@ std::string Dispatcher::Dispatch(json requestInfo)
 json Dispatcher::LoginHandle(json &requestInfo)
 {
     json responseInfo;
-    auto roomId = requestInfo["room_id"].get<std::string>();
-    auto userId = requestInfo["user_id"].get<std::string>();
 
     std::cout << "[INFO] Login request comes" << std::endl;
+    auto roomId = requestInfo["room_id"].get<int>();
+    auto userId = requestInfo["user_id"].get<std::string>();
 
     // 查询数据库是否有该用户名同时为该密码的条目
     responseInfo["ret"] = LOG_IN_FAIL;
-    if (_rooms.find(roomId) != _room.end()) {
-        if (_rooms[roomId] == userId) {
+    if (_parent->_rooms.find(roomId) != _parent->_rooms.end()) {
+        if (_parent->_rooms[roomId] == userId) {
             // 检查是否已经在线
-            if (_parent->Online(_roomId, this))
+            if (_parent->Online(roomId, this)) {
                 responseInfo["ret"] = LOG_IN_SUCC;
+                responseInfo["is_heat_mode"] = true;
+                responseInfo["temp"] = 0;
+            }
         }
     }
 

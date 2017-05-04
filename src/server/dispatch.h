@@ -62,7 +62,7 @@ private:
     SOCKET _connection;
 
     // 与socket连接绑定的用户名
-    std::string _username;
+    int _username;
 
     // server指针，以访问server维护的在线列表
     Connor_Socket::Server *_parent;

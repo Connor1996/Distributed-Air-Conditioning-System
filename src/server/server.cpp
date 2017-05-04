@@ -7,8 +7,9 @@ using namespace Connor_Socket;
 using json = nlohmann::json;
 
 
-Server::Server() : _setting({false, 25})
+Server::Server() : _setting({false, 25}), _count(0)
 {
+    _rooms.emplace(std::make_pair(417, "123"));
     _listeningSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (_listeningSocket == -1)
         throw std::runtime_error("Cannot create listening socket");
@@ -83,10 +84,9 @@ Server::Server() : _setting({false, 25})
                     }
                     catch (std::exception e)
                     {
-                        shutdown(connection, SD_BOTH);
-                        closesocket(connection);
-                        cout << "[ERROR] " << e.what() << endl;
-                        break;
+                        //shutdown(connection, SD_BOTH);
+                        //closesocket(connection);
+                        cout << "[ERROR] wrong field for json" << endl;
                     }
 
                     char recvBuf[DEFAULT_BUFLEN];
@@ -112,7 +112,7 @@ Server::~Server()
     closesocket(_listeningSocket);
 }
 
-bool Server::Online(std::string username, Dispatcher* connection)
+bool Server::Online(int username, Dispatcher* connection)
 {
     // emplace返回一个pair，第二个元素为是否成功插入
     // 若map中已经有一个同插入相同的key，则不进行插入
@@ -120,15 +120,15 @@ bool Server::Online(std::string username, Dispatcher* connection)
     return result.second;
 }
 
-void Server::Offline(std::string username)
+void Server::Offline(int username)
 {
     // 将用户名从在线列表移除
     _sockets.erase(username);
 }
 
-std::list<std::string> Server::GetOnlineList()
+std::list<int> Server::GetOnlineList()
 {
-    std::list<std::string> onlineList;
+    std::list<int> onlineList;
     for (const auto& pair : _sockets)
         onlineList.emplace_back(pair.first);
 

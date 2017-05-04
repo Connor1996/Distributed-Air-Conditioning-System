@@ -24,7 +24,6 @@ private:
     Ui::Management *ui;
     Connor_Socket::Server *_server;
 
-    std::unordered_map<std::string, std::string> _rooms;
 signals:
     void toLogIn();
 
