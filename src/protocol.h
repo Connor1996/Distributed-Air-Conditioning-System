@@ -18,6 +18,7 @@
 // double cost --- 实时累计金额
 // double power --- 实时累计功率
 
+#define REPLY_CON -4
 // 主控机回复从控机是否送风
 // int ret = REPLY_CON
 // bool is_vaild
