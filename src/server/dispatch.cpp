@@ -10,25 +10,30 @@
 
 using namespace ORMLite;
 
-
+#include <QMessageBox>
 std::string Dispatcher::Dispatch(json requestInfo)
 {
     json responseInfo;
     // 根据请求信息内容，转到相应的处理逻辑
     switch (requestInfo["op"].get<int>()) {
     case LOG_IN_USER:
+
         responseInfo = LoginHandle(requestInfo);
         break;
     case REQ_STOP:
+        QMessageBox::information(this, "info", "stop");
         _state.isOn = false;
         break;
     case REQ_RESUME:
+        QMessageBox::information(this, "info", "resume");
         _state.isOn = true;
         break;
     case REQ_UPDATE:
+        QMessageBox::information(this, "info", "update");
         responseInfo = UpdateSettingHandle(requestInfo);
         break;
     case REPORT_STATE:
+        QMessageBox::information(this, "info", "state");
         responseInfo = StateHandle(requestInfo);
         break;
     default:
@@ -41,40 +46,22 @@ std::string Dispatcher::Dispatch(json requestInfo)
 
 json Dispatcher::LoginHandle(json &requestInfo)
 {
-    ORMapper<UserInfo> mapper("data.db");
-    UserInfo helper;
-    QueryMessager<UserInfo> messager(helper);
-
     json responseInfo;
+    auto roomId = requestInfo["room_id"].get<std::string>();
+    auto userId = requestInfo["user_id"].get<std::string>();
 
     std::cout << "[INFO] Login request comes" << std::endl;
 
     // 查询数据库是否有该用户名同时为该密码的条目
-    auto result = mapper.Query(messager
-                 .Where(Field(helper.room_id) == requestInfo["room_id"].get<std::string>()
-                        && Field(helper.user_id) == requestInfo["user_id"].get<std::string>()));
-
-    if (result)
-    {
-        // 如果没有说明，说明用户名或密码错误
-        if (messager.IsNone())
-            responseInfo["ret"] = LOG_IN_FAIL;
-        else
-        {
-            // 将username加入在线列表
-            _username = requestInfo["user_id"].get<std::string>();
+    responseInfo["ret"] = LOG_IN_FAIL;
+    if (_rooms.find(roomId) != _room.end()) {
+        if (_rooms[roomId] == userId) {
             // 检查是否已经在线
-            if (_parent->Online(_username, this))
+            if (_parent->Online(_roomId, this))
                 responseInfo["ret"] = LOG_IN_SUCC;
-            else
-                responseInfo["ret"] = LOG_IN_FAIL;
         }
     }
-    else
-    {
-        responseInfo["define"] = LOG_IN_FAIL;
-        std::cout << "[ERROR] " << mapper.GetErrorMessage() << std::endl;
-    }
+
 
     return responseInfo;
 }

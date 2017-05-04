@@ -12,40 +12,24 @@
 using Connor_Socket::Server;
 using json = nlohmann::json;
 
-unsigned int Random(int max)
-{
-   errno_t err;
-   unsigned int number;
-   err = rand_s(&number);
-   if (err != 0)
-   {
-        return 0;
-   }
-   return (unsigned int)((double)number / ((double)UINT_MAX + 1) * double(max)) + 1;
-}
-
-std::string itos(int n) {
-    std::stringstream ss;
-    ss << n;
-    std::string s;
-    ss >> s;
-    return s;
-}
 
 Management::Management(QWidget *parent) :
     QWidget(parent), _server(nullptr),
     ui(new Ui::Management)
 {
     ui->setupUi(this);
-    new std::thread([&](){
+    std::thread *thread = new std::thread([&](){
         _server = new Server();
     });
+
+    _rooms.emplace(std::make_pair("417", "wangxiaoyu"));
 }
 
 Management::~Management()
 {
     delete ui;
-    //delete timer;
+    delete _server;
+    delete thread;
 }
 
 void Management::Show() {
