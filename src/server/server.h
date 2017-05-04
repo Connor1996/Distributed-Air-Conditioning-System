@@ -37,16 +37,12 @@ public:
     //      username 需要移除的用户名
     void Offline(int username);
 
-    // 获得在线用户列表
-    // @return:
-    //      装载有所有在线用户名的list
-    std::list<int> GetOnlineList();
-
 
     struct Setting GetSetting() {
         return _setting;
     }
- std::unordered_map<int, std::string> _rooms;
+    std::unordered_map<int, std::string> _rooms;
+
 protected:
     // 监听客户端访问的socket
     SOCKET _listeningSocket;

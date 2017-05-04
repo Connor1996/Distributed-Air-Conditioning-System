@@ -61,8 +61,8 @@ private:
     // 与dispatcher绑定的socket连接
     SOCKET _connection;
 
-    // 与socket连接绑定的用户名
-    int _username;
+    // 与socket连接绑定的房间号
+    int _roomId;
 
     // server指针，以访问server维护的在线列表
     Connor_Socket::Server *_parent;

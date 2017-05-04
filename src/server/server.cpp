@@ -65,7 +65,7 @@ Server::Server() : _setting({false, 25}), _count(0)
                         // 保证cout完整执行而不被其他线程打断
                         mtx.lock();
                         // 若是在线状态，下线处理
-                            dispatcher.Logout();
+                        dispatcher.Logout();
                         cout << "[INFO] Someone offline, now " << --_count << " connections in total" << endl;
                         mtx.unlock();
 
@@ -124,13 +124,4 @@ void Server::Offline(int username)
 {
     // 将用户名从在线列表移除
     _sockets.erase(username);
-}
-
-std::list<int> Server::GetOnlineList()
-{
-    std::list<int> onlineList;
-    for (const auto& pair : _sockets)
-        onlineList.emplace_back(pair.first);
-
-    return onlineList;
 }

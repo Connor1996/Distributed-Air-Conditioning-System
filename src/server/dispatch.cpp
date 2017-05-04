@@ -60,6 +60,7 @@ json Dispatcher::LoginHandle(json &requestInfo)
                 responseInfo["ret"] = LOG_IN_SUCC;
                 responseInfo["is_heat_mode"] = true;
                 responseInfo["temp"] = 0;
+                _roomId = roomId;
             }
         }
     }
@@ -96,5 +97,5 @@ json Dispatcher::StateHandle(json &requestInfo)
 
 void Dispatcher::Logout()
 {
-    _parent->Offline(_username);
+    _parent->Offline(_roomId);
 }

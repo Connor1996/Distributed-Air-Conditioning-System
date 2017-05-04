@@ -21,7 +21,8 @@ Management::Management(QWidget *parent) :
     std::thread *thread = new std::thread([&](){
         _server = new Server();
     });
-
+    InitWidget();
+    InitConnect();
 
 }
 
@@ -30,13 +31,6 @@ Management::~Management()
     delete ui;
     delete _server;
     //delete thread;
-}
-
-void Management::Show() {
-    InitWidget();
-    InitConnect();
-    this->show();
-    UpdateSetting();
 }
 
 void Management::InitWidget() {
@@ -57,18 +51,7 @@ void Management::InitConnect() {
 //    QObject::connect(this->tempChangeTimer, SIGNAL(timeout()), this, SLOT(UpdateTemp()));
 }
 
-void Management::UpdateSetting() {
-//    bool is_heat_mode = expTemp > temp ? true : false;
-//    json sendInfo = {
-//        {"op", REQ_UPDATE},
-//        {"is_heat_mode", is_heat_mode},
-//        {"temp", temp},
-//        {"speed", TempInc[(int)speed]}
-//    };
-//    _client = new Client("");
-//    _client->Connect(sendInfo.dump());
-//    delete _client;
-}
+
 
 void Management::LogOutClicked() {
     //json sendInfo = {{"op", REQ_STOP}};
@@ -108,46 +91,6 @@ void Management::TempDownClicked() {
 //    }
 }
 
-void Management::WindUpClicked() {
-//    if (this->speed != Speed::FAST_SPEED) {
-//        this->speed = (Speed)(((int)this->speed) + 1);
-//        this->ui->WindSpeed->setText(QString::fromStdString(SpeedStr[(int)speed]));
-//        if (tempChangeTimer->isActive()) {
-//            tempChangeTimer->stop();
-//            tempChangeTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
-//        }
-//        UpdateSetting();
-//    }
-}
 
-void Management::WindDownClicked() {
-//    if (this->speed != Speed::SLOW_SPEED) {
-//        this->speed = (Speed)(((int)this->speed) - 1);
-//        this->ui->WindSpeed->setText(QString::fromStdString(SpeedStr[(int)speed]));
-//        if (tempChangeTimer->isActive()) {
-//            tempChangeTimer->stop();
-//            tempChangeTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
-//        }
-//        UpdateSetting();
-//    }
-}
 
-void Management::UpdateTemp() {
-//    std::cout << "timeout " << x++ << std::endl;
-//    if (expTemp > temp) {
-//        temp = temp + 1 > expTemp ? expTemp : temp + 1;
-//        this->ui->temperature->setText(QString::fromStdString(itos(temp) + " Centigrade"));
-//    }
-//    if (expTemp < temp) {
-//        temp = temp - 1 < expTemp ? expTemp : temp - 1;
-//        this->ui->temperature->setText(QString::fromStdString(itos(temp) + " Centigrade"));
-//    }
-//    if (!reachExpedtedTemp && expTemp == temp) {
-//        reachExpedtedTemp = true;
-//        tempChangeTimer->stop();
-//        //_client = new Client("");
-//        //json sendInfo = {{"op", REQ_STOP}};
-//        //_client->Connect(sendInfo.dump());
-//        //delete _client;
-//    }
-}
+

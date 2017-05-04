@@ -19,7 +19,6 @@ public:
 private:
     void InitWidget();
     void InitConnect();
-    void UpdateSetting();
 
     Ui::Management *ui;
     Connor_Socket::Server *_server;
@@ -28,13 +27,9 @@ signals:
     void toLogIn();
 
 private slots:
-    void Show();
     void LogOutClicked();
     void TempUpClicked();
     void TempDownClicked();
-    void WindUpClicked();
-    void WindDownClicked();
-    void UpdateTemp();
 };
 
 #endif // MANAGEMENT_H

@@ -24,11 +24,15 @@ namespace Connor_Socket
 #define CLIENT_PORT 5150            // 客户端连接端口
 #define SERVER_PORT 2222            // 服务器监听端口
 
-                                    // 单机模式下都指向localhost
-//#define CLIENT_ADDR "10.201.17.51"     // 客户端IP地址
-//#define SERVER_ADDR "10.201.17.39"     // 服务器IP地址
-#define CLIENT_ADDR "127.0.0.1"
+#ifdef _REMOTE_
+#define CLIENT_ADDR "10.201.17.51"     // 客户端IP地址
+#define SERVER_ADDR "10.201.17.39"     // 服务器IP地址
+#else
+#define CLIENT_ADDR "127.0.0.1"     // 单机模式下都指向localhost
 #define SERVER_ADDR "127.0.0.1"
+#endif
+
+
 
 using std::cout;
 using std::endl;
