@@ -84,6 +84,7 @@ void Widget::Login()
             QMessageBox::information(this, "info", "Room No. or ID incorrect");
         }
         else {
+            std::cout << "excute" << std::endl;
             this->close();
             this->ui->IDEdit->clear();
             this->ui->RoomEdit->clear();

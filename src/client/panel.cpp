@@ -10,6 +10,7 @@
 #include "conditionorattr.h"
 
 #include <QTimer>
+#include <QMessageBox>
 #include <thread>
 
 using Connor_Socket::Client;
@@ -53,11 +54,11 @@ Panel::~Panel()
 }
 
 void Panel::Show(Connor_Socket::Client* c) {
+    std::cout << "panel show" << std::endl;
     _client = c;
     InitWidget();
     InitConnect();
     this->show();
-    UpdateSetting();
 }
 
 void Panel::InitWidget() {
@@ -82,7 +83,7 @@ void Panel::InitConnect() {
     QObject::connect(this->notifyTimer, SIGNAL(timeout()), this, SLOT(UpdateSetting()));
 }
 
-void Panel::UpdateSetting() {
+void Panel::UpdateRequest() {
     ca.is_heat_mode = ca.expTemp > ca.temp ? true : false;
     json sendInfo = {
         {"op", REQ_UPDATE},
@@ -93,9 +94,21 @@ void Panel::UpdateSetting() {
     _client->Send(sendInfo.dump());
 }
 
+void Panel::UpdateSetting() {
+    ca.is_heat_mode = ca.expTemp > ca.temp ? true : false;
+    json sendInfo = {
+        {"op", REPORT_STATE},
+        {"set_temp", ca.expTemp},
+        {"real_temp", ca.temp},
+        {"speed", TempInc[(int)ca.speed]}
+    };
+    _client->Send(sendInfo.dump());
+}
+
 void Panel::LogOutClicked() {
     json sendInfo = {{"op", REQ_STOP}};
     _client->Send(sendInfo.dump());
+
     this->close();
     emit toLogIn();
 }
@@ -108,6 +121,7 @@ void Panel::TempUpClicked() {
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         json sendInfo = {{"op", REQ_RESUME}};
         _client->Send(sendInfo.dump());
+        UpdateRequest();
     }
 }
 
@@ -119,6 +133,7 @@ void Panel::TempDownClicked() {
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         json sendInfo = {{"op", REQ_RESUME}};
         _client->Send(sendInfo.dump());
+        UpdateRequest();
     }
 }
 
@@ -130,6 +145,7 @@ void Panel::WindUpClicked() {
             tempTimer->stop();
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         }
+        UpdateRequest();
     }
 }
 
@@ -141,6 +157,7 @@ void Panel::WindDownClicked() {
             tempTimer->stop();
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         }
+        UpdateRequest();
     }
 }
 

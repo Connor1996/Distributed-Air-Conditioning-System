@@ -20,6 +20,7 @@ public:
 private:
     void InitWidget();
     void InitConnect();
+    void UpdateRequest();
     Ui::Panel *ui;
     Connor_Socket::Client *_client;
     ConditionorAttr ca;
