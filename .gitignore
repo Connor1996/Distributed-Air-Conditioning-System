@@ -43,7 +43,7 @@ Temporary Items
 .apdisk
 
 # Qt Project
-*.user
 *debug
 *release
+*ui
 Makefile

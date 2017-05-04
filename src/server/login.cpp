@@ -35,6 +35,7 @@ void Widget::InitConnect()
 Widget::~Widget()
 {
     delete ui;
+    delete window;
 }
 
 
@@ -52,9 +53,8 @@ void Widget::Login()
         QMessageBox::information(this, "info", "password not filled");
     } else if (username == "admin" && password == "admin"){
         this->close();
-        Management window;
+        window = new Management();
         window->show();
-        //new management();
     } else {
         QMessageBox::information(this, "info", "wrong password");
         this->ui->passwordEdit->clear();

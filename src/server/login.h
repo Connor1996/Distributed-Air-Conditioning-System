@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "server.h"
+#include "management.h"
 
 namespace Ui {
 class Widget;
@@ -22,9 +23,6 @@ private slots:
     void Login();
     void Cancel();
 
-signals:
-    void toPanel();
-
 private:
     // 初始化UI界面
     void InitUi();
@@ -34,8 +32,8 @@ private:
 
     // 该widget的ui界面指针
     Ui::Widget *ui;
-    // 与服务器连接的socket指针
-    Connor_Socket::Server *_server;
+
+    Management *window;
 };
 
 #endif // WIDGET_H

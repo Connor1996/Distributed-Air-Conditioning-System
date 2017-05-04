@@ -60,7 +60,8 @@ Server{
         src/server/server.cpp \
         src/server/main.cpp \
         src/include/sqlite3.c \
-        src/server/login.cpp
+        src/server/login.cpp \
+        src/server/management.cpp
 
     HEADERS += \
         src/server/dispatch.h \
@@ -68,8 +69,10 @@ Server{
         src/server/server.h \
         src/include/sqlite3.h \
         src/model/*.h \
-        src/server/login.h
+        src/server/login.h \
+        src/server/management.h
 
     FORMS += \
-        src/server/login.ui
+        src/server/login.ui \
+        src/server/management.ui
 }
