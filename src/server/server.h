@@ -4,7 +4,10 @@
 #include <unordered_map>
 #include <set>
 
+#include "dispatch.h"
 #include "../socket.h"
+// 前置声明解决相互包含
+class Dispatcher;
 
 namespace Connor_Socket {
 
@@ -22,7 +25,7 @@ public:
     //      connection 与该用户名绑定的socket
     // @return:
     //      是否在线
-    bool Online(std::string username, SOCKET connection);
+    bool Online(std::string username, Dispatcher* connection);
 
     // 将某用户从在线列表移除
     // @param:
@@ -43,11 +46,15 @@ protected:
     // 持有与各个客户端保持通信的线程
     std::vector<std::thread> _socketThreads;
 
-    // 持有用户名相对应的socket链接
-    std::unordered_map<std::string, SOCKET> _sockets;
+    // 持有用户名相对应的dispathcer
+    std::unordered_map<std::string, Dispatcher*> _sockets;
 
-    // 连接到服务器的客户端数
-    size_t _count;
+    int _count;
+
+    struct {
+        bool is_heat_mode;
+        int set_temperature;
+    } _setting;
 };
 
 }

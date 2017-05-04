@@ -1,6 +1,5 @@
 ﻿#include "server.h"
 
-#include "dispatch.h"
 #include "../protocol.h"
 #include "../include/json.hpp"
 
@@ -8,7 +7,7 @@ using namespace Connor_Socket;
 using json = nlohmann::json;
 
 
-Server::Server() : _count(0)
+Server::Server() : _setting({false, 25})
 {
     _listeningSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (_listeningSocket == -1)
@@ -65,7 +64,6 @@ Server::Server() : _count(0)
                         // 保证cout完整执行而不被其他线程打断
                         mtx.lock();
                         // 若是在线状态，下线处理
-                        if (dispatcher.getState() == LOG_IN_SUCC)
                             dispatcher.Logout();
                         cout << "[INFO] Someone offline, now " << --_count << " connections in total" << endl;
                         mtx.unlock();
@@ -88,6 +86,7 @@ Server::Server() : _count(0)
                         shutdown(connection, SD_BOTH);
                         closesocket(connection);
                         cout << "[ERROR] " << e.what() << endl;
+                        break;
                     }
 
                     char recvBuf[DEFAULT_BUFLEN];
@@ -101,7 +100,7 @@ Server::Server() : _count(0)
                         cout << "[INFO] send message: " << responseStr << endl;
                 }
             }
-        }, std::move(newConnection)));
+        }, newConnection));
 
         _socketThreads.back().detach(); //使子线程独立运行
     }
@@ -113,7 +112,7 @@ Server::~Server()
     closesocket(_listeningSocket);
 }
 
-bool Server::Online(std::string username, SOCKET connection)
+bool Server::Online(std::string username, Dispatcher* connection)
 {
     // emplace返回一个pair，第二个元素为是否成功插入
     // 若map中已经有一个同插入相同的key，则不进行插入
@@ -133,5 +132,5 @@ std::list<std::string> Server::GetOnlineList()
     for (const auto& pair : _sockets)
         onlineList.emplace_back(pair.first);
 
-    return std::move(onlineList);
+    return onlineList;
 }

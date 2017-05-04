@@ -1,3 +1,6 @@
+﻿#ifndef PROTOCOL_H
+#define PROTOCOL_H
+
 /////////////////////主控机向从控机发送的信息//////////////////////////
 #define LOG_IN_SUCC -1
 // 主控机确定从控机的登陆请求合法
@@ -9,9 +12,9 @@
 // 主控机确定从控机的登陆请求不合法
 // int ret = LOG_IN_FAIL
 
-#define GET_STATE 5
-//主控机周期性请求获取房间状态，顺便发送房间计费情况
-// int op = GET_STATE
+#define REPLY_MONEY -3
+//主控机收到从控机发送的状态后，返回房间计费情况
+// int ret = REPLY_MONEY
 // double cost --- 实时累计金额
 // double power --- 实时累计功率
 
@@ -42,9 +45,12 @@
 // int temp
 // int speed = 1..3
 
-#define REPLY_STATE -3
-// 从控机回复状态，用于主控机监测房间状态
-// int ret = REPLY_STATE
+#define REPORT_STATE 5
+// 从控机周期性回复状态，用于主控机监测房间状态
+// int op = REPORT_STATE
 // int set_temp --- the temperature user wants to get
 // int real_temp --- the actual temperature in user's room
 // int speed = 1..3
+
+
+#endif PROTOCOL_H

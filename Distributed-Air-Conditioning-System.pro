@@ -28,8 +28,7 @@ debug {
 HEADERS += \
         src/socket.h \
         src/protocol.h \
-        src/include/json.hpp \
-        socket.h
+        src/include/json.hpp
 
 Client{
     UI_DIR = ./ui
