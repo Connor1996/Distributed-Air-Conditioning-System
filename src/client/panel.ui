@@ -87,6 +87,32 @@
      <string>风速-</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="modeButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>模式</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="switchButton">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>90</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>开关</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QWidget" name="viewer" native="true">
    <property name="geometry">
@@ -199,6 +225,32 @@
     </property>
     <property name="text">
      <string>Expected Temperature</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>170</y>
+      <width>54</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Mode</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mode">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>170</y>
+      <width>54</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>制冷</string>
     </property>
    </widget>
   </widget>

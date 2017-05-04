@@ -45,7 +45,7 @@ Management::Management(QWidget *parent) :
 Management::~Management()
 {
     delete ui;
-    //delete timer;
+    //delete tempChangeTimer;
 }
 
 void Management::Show() {
@@ -61,7 +61,7 @@ void Management::InitWidget() {
 //    ui->temperature->setText(t);
 //    ui->expectedTemp->setText(t);
 //    ui->WindSpeed->setText(QString::fromStdString(SpeedStr[(int)speed]));
-    //timer = new QTimer();
+    //tempChangeTimer = new QTimer();
 }
 
 void Management::InitConnect() {
@@ -70,7 +70,7 @@ void Management::InitConnect() {
 //    QObject::connect(ui->tempDown, SIGNAL(clicked(bool)), this, SLOT(TempDownClicked()));
 //    QObject::connect(ui->windUp, SIGNAL(clicked(bool)), this, SLOT(WindUpClicked()));
 //    QObject::connect(ui->windDown, SIGNAL(clicked(bool)), this, SLOT(WindDownClicked()));
-//    QObject::connect(this->timer, SIGNAL(timeout()), this, SLOT(UpdateTemp()));
+//    QObject::connect(this->tempChangeTimer, SIGNAL(timeout()), this, SLOT(UpdateTemp()));
 }
 
 void Management::UpdateSetting() {
@@ -98,8 +98,8 @@ void Management::TempUpClicked() {
 //    if (this->expTemp != (int)TempRange::UPPER_BOUND) {
 //        expTemp++;
 //        this->ui->expectedTemp->setText(QString::fromStdString(itos(expTemp) + " Centigrade"));
-//        if (!timer->isActive())
-//            timer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
+//        if (!tempChangeTimer->isActive())
+//            tempChangeTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
 //        reachExpedtedTemp = false;
 ////        _client = new Client("");
 ////        json sendInfo = {{"op", REQ_RESUME}};
@@ -113,8 +113,8 @@ void Management::TempDownClicked() {
 //    if (this->expTemp != (int)TempRange::LOWER_BOUND) {
 //        expTemp--;
 //        this->ui->expectedTemp->setText(QString::fromStdString(itos(expTemp) + " Centigrade"));
-//        if (!timer->isActive())
-//            timer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
+//        if (!tempChangeTimer->isActive())
+//            tempChangeTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
 //        reachExpedtedTemp = false;
 ////        _client = new Client("");
 ////        json sendInfo = {{"op", REQ_RESUME}};
@@ -128,9 +128,9 @@ void Management::WindUpClicked() {
 //    if (this->speed != Speed::FAST_SPEED) {
 //        this->speed = (Speed)(((int)this->speed) + 1);
 //        this->ui->WindSpeed->setText(QString::fromStdString(SpeedStr[(int)speed]));
-//        if (timer->isActive()) {
-//            timer->stop();
-//            timer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
+//        if (tempChangeTimer->isActive()) {
+//            tempChangeTimer->stop();
+//            tempChangeTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
 //        }
 //        UpdateSetting();
 //    }
@@ -140,9 +140,9 @@ void Management::WindDownClicked() {
 //    if (this->speed != Speed::SLOW_SPEED) {
 //        this->speed = (Speed)(((int)this->speed) - 1);
 //        this->ui->WindSpeed->setText(QString::fromStdString(SpeedStr[(int)speed]));
-//        if (timer->isActive()) {
-//            timer->stop();
-//            timer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
+//        if (tempChangeTimer->isActive()) {
+//            tempChangeTimer->stop();
+//            tempChangeTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
 //        }
 //        UpdateSetting();
 //    }
@@ -160,7 +160,7 @@ void Management::UpdateTemp() {
 //    }
 //    if (!reachExpedtedTemp && expTemp == temp) {
 //        reachExpedtedTemp = true;
-//        timer->stop();
+//        tempChangeTimer->stop();
 //        //_client = new Client("");
 //        //json sendInfo = {{"op", REQ_STOP}};
 //        //_client->Connect(sendInfo.dump());
