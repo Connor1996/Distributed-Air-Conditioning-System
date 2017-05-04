@@ -90,7 +90,7 @@
         if (send(_connectSocket, sendBuf, sendBufLen, 0) == SOCKET_ERROR)
         {
             closesocket(_connectSocket);
-            throw std::runtime_error("Failed at send message");
+            cout << "[ERROR] Failed at send message" << endl;
         }
         cout << "[INFO] send complete" << endl;
         // 等待接受服务器的返回信息
