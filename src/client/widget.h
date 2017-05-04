@@ -21,9 +21,10 @@ private slots:
     // 登陆
     void Login();
     void Cancel();
+    void Show();
 
 signals:
-    void toPanel();
+    void toPanel(Connor_Socket::Client* c);
 
 private:
     // 初始化UI界面

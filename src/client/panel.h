@@ -4,7 +4,6 @@
 #include <QWidget>
 #include "client.h"
 #include "conditionorattr.h"
-#include "conditionorattr.h"
 
 namespace Ui {
 class Panel;
@@ -21,27 +20,23 @@ public:
 private:
     void InitWidget();
     void InitConnect();
-    void UpdateSetting();
     Ui::Panel *ui;
     Connor_Socket::Client *_client;
-    int temp;
-    int expTemp;
-    Speed speed = Speed::FAST_SPEED;
-    QTimer* timer;
-    bool reachExpedtedTemp = true;
-    int x = 0;
+    ConditionorAttr ca;
+    QTimer* tempTimer, *notifyTimer;
 
 signals:
     void toLogIn();
 
 private slots:
-    void Show();
+    void Show(Connor_Socket::Client* c);
     void LogOutClicked();
     void TempUpClicked();
     void TempDownClicked();
     void WindUpClicked();
     void WindDownClicked();
     void UpdateTemp();
+    void UpdateSetting();
 };
 
 #endif // PANEL_H
