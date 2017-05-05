@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include "../socket.h"
+#include <mutex>
 
 namespace Connor_Socket {
 
@@ -49,6 +50,8 @@ protected:
     SOCKADDR_IN _serverAddr;
     // 用户名
     string _username;
+private:
+    std::mutex mtx;
 };
 
 }

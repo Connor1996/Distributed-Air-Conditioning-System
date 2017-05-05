@@ -1,4 +1,4 @@
-﻿            #include "client.h"
+﻿    #include "client.h"
     #include "src/include/json.hpp"
 
     using namespace Connor_Socket;
@@ -78,6 +78,7 @@
 
     std::string Client::Send(std::string requestInfo)
     {
+        std::lock_guard<std::mutex> guard(mtx);
         int recvBufLen = DEFAULT_BUFLEN;
         char recvBuf[DEFAULT_BUFLEN];
 
