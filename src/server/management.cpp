@@ -7,6 +7,7 @@
 #include "src/include/json.hpp"
 #include "src/protocol.h"
 
+#include <QMessageBox>
 #include <QTimer>
 
 using Connor_Socket::Server;
@@ -33,63 +34,46 @@ Management::~Management()
     //delete thread;
 }
 
+#define DEFAULT_TEMP 18
 void Management::InitWidget() {
-    //expTemp = temp = (int)TempRange::LOWER_BOUND + Random((int)TempRange::UPPER_BOUND - (int)TempRange::LOWER_BOUND);
-    //QString t = QString::fromStdString(itos(temp) + " Centigrade");
-//    ui->temperature->setText(t);
-//    ui->expectedTemp->setText(t);
-//    ui->WindSpeed->setText(QString::fromStdString(SpeedStr[(int)speed]));
-    //tempChangeTimer = new QTimer();
+    ui->tempNumber->display(DEFAULT_TEMP);
 }
+#define MIN_TEMP 16
+#define MAX_TEMP 30
 
 void Management::InitConnect() {
-//    QObject::connect(ui->logOutButton, SIGNAL(clicked(bool)), this, SLOT(LogOutClicked()));
-//    QObject::connect(ui->tempUp, SIGNAL(clicked(bool)), this, SLOT(TempUpClicked()));
-//    QObject::connect(ui->tempDown, SIGNAL(clicked(bool)), this, SLOT(TempDownClicked()));
-//    QObject::connect(ui->windUp, SIGNAL(clicked(bool)), this, SLOT(WindUpClicked()));
-//    QObject::connect(ui->windDown, SIGNAL(clicked(bool)), this, SLOT(WindDownClicked()));
-//    QObject::connect(this->tempChangeTimer, SIGNAL(timeout()), this, SLOT(UpdateTemp()));
+    connect(ui->tempDownButton, &QPushButton::clicked, [this](){
+        ui->tempNumber->display(max(MIN_TEMP, ui->tempNumber->intValue() - 1));
+    });
+
+    connect(ui->tempUpButton, &QPushButton::clicked, [this](){
+        ui->tempNumber->display(min(MAX_TEMP, ui->tempNumber->intValue() + 1));
+    });
+
+    connect(ui->checkInButton, &QPushButton::clicked, [this](){
+        int roomId;
+        try {
+            roomId = ui->roomIdEdit->text().toInt();
+        } catch (std::exception e) {
+            QMessageBox::information(this, "info", "please input digital roomid");
+        }
+
+        std::string userId = ui->userIdEdit->text().toStdString();
+        if (_server->CheckIn(roomId, userId))
+            QMessageBox::information(this, "info", "check in successful");
+        else
+            QMessageBox::information(this, "info", "already check in");
+    });
+
+    connect(ui->checkOutButton, &QPushButton::clicked, [this](){
+        int roomId = ui->roomIdEdit->text().toInt();
+        if (!_server->CheckOut(roomId))
+            QMessageBox::information(this, "info", "this roomId is not checked in");
+    });
 }
 
 
 
-void Management::LogOutClicked() {
-    //json sendInfo = {{"op", REQ_STOP}};
-    //_client = new Client("");
-    //_client->Connect(sendInfo.dump());
-    this->close();
-    emit toLogIn();
-}
-
-void Management::TempUpClicked() {
-//    if (this->expTemp != (int)TempRange::UPPER_BOUND) {
-//        expTemp++;
-//        this->ui->expectedTemp->setText(QString::fromStdString(itos(expTemp) + " Centigrade"));
-//        if (!tempChangeTimer->isActive())
-//            tempChangeTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
-//        reachExpedtedTemp = false;
-////        _client = new Client("");
-////        json sendInfo = {{"op", REQ_RESUME}};
-////        _client->Connect(sendInfo.dump());
-////        delete _client;
-//        UpdateSetting();
-//    }
-}
-
-void Management::TempDownClicked() {
-//    if (this->expTemp != (int)TempRange::LOWER_BOUND) {
-//        expTemp--;
-//        this->ui->expectedTemp->setText(QString::fromStdString(itos(expTemp) + " Centigrade"));
-//        if (!tempChangeTimer->isActive())
-//            tempChangeTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)speed]);
-//        reachExpedtedTemp = false;
-////        _client = new Client("");
-////        json sendInfo = {{"op", REQ_RESUME}};
-////        _client->Connect(sendInfo.dump());
-////        delete _client;
-//        UpdateSetting();
-//    }
-}
 
 
 

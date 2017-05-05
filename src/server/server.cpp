@@ -9,7 +9,6 @@ using json = nlohmann::json;
 
 Server::Server() : _setting({false, 25}), _count(0)
 {
-    _rooms.emplace(std::make_pair(417, "123"));
     _listeningSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (_listeningSocket == -1)
         throw std::runtime_error("Cannot create listening socket");
@@ -112,16 +111,31 @@ Server::~Server()
     closesocket(_listeningSocket);
 }
 
-bool Server::Online(int username, Dispatcher* connection)
+bool Server::Online(int roomId, Dispatcher* connection)
 {
     // emplace返回一个pair，第二个元素为是否成功插入
     // 若map中已经有一个同插入相同的key，则不进行插入
-    auto result = _sockets.emplace(std::make_pair(username, connection));
+    auto result = _sockets.emplace(std::make_pair(roomId, connection));
     return result.second;
 }
 
-void Server::Offline(int username)
+void Server::Offline(int roomId)
 {
     // 将用户名从在线列表移除
-    _sockets.erase(username);
+    _sockets.erase(roomId);
+}
+
+bool Server::CheckIn(int roomId, std::string userId) {
+    auto result = _rooms.emplace(std::make_pair(roomId, userId));
+    return result.second;
+}
+
+
+bool Server::CheckOut(int roomId) {
+    if (_rooms.find(roomId) == _rooms.end())
+        return false;
+    else {
+        _rooms.erase(roomId);
+        return true;
+    }
 }

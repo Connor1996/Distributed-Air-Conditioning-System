@@ -18,30 +18,22 @@ namespace Connor_Socket {
 
 class Server : Socket
 {
+    friend class Dispatcher;
 public:
     // 构造函数，打开监听接口等待请求
     Server();
 
     ~Server();
 
-    // 查询用户是否在线
-    // @param:
-    //      username 需要查询的用户名
-    //      connection 与该用户名绑定的socket
-    // @return:
-    //      是否在线
-    bool Online(int username, Dispatcher* connection);
+    bool Online(int roomId, Dispatcher* connection);
 
-    // 将某用户从在线列表移除
-    // @param:
-    //      username 需要移除的用户名
-    void Offline(int username);
+    void Offline(int roomId);
 
+    bool CheckIn(int roomId, std::string userId);
 
-    struct Setting GetSetting() {
-        return _setting;
-    }
-    std::unordered_map<int, std::string> _rooms;
+    bool CheckOut(int roomId);
+
+    struct Setting GetSetting() { return _setting; }
 
 protected:
     // 监听客户端访问的socket
@@ -55,6 +47,8 @@ protected:
 
     // 持有用户名相对应的dispathcer
     std::unordered_map<int, Dispatcher*> _sockets;
+
+    std::unordered_map<int, std::string> _rooms;
 
     int _count;
 

@@ -23,13 +23,6 @@ private:
     Ui::Management *ui;
     Connor_Socket::Server *_server;
 
-signals:
-    void toLogIn();
-
-private slots:
-    void LogOutClicked();
-    void TempUpClicked();
-    void TempDownClicked();
 };
 
 #endif // MANAGEMENT_H
