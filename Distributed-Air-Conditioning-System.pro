@@ -76,3 +76,6 @@ Server{
         src/server/login.ui \
         src/server/management.ui
 }
+
+RESOURCES += \
+    image/image.qrc

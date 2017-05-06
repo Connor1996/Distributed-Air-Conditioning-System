@@ -54,7 +54,7 @@ void Management::InitConnect() {
     connect(ui->checkInButton, &QPushButton::clicked, [this](){
         int roomId;
         try {
-            roomId = ui->roomIdEdit->text().toInt();
+            roomId = ui->roomId->currentText().toInt();
         } catch (std::exception) {
             QMessageBox::information(this, "info", "please input digital roomid");
         }
@@ -66,13 +66,16 @@ void Management::InitConnect() {
             QMessageBox::information(this, "info", "already check in");
 
         ui->userIdEdit->clear();
-        ui->roomIdEdit->clear();
     });
 
     connect(ui->checkOutButton, &QPushButton::clicked, [this](){
-        int roomId = ui->roomIdEdit->text().toInt();
+        int roomId = ui->roomId->currentText().toInt();
         if (!_server->CheckOut(roomId))
             QMessageBox::information(this, "info", "this roomId is not checked in");
+        else
+            QMessageBox::information(this, "info", "check out successful");
+
+        ui->userIdEdit->clear();
     });
 }
 

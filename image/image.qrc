@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/server">
+        <file alias="checkin">checkin.png</file>
+        <file alias="checkout">checkout.png</file>
+    </qresource>
+</RCC>
