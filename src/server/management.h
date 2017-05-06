@@ -1,8 +1,12 @@
 ﻿#ifndef MANAGEMENT_H
 #define MANAGEMENT_H
 
-#include <QWidget>
 #include "server.h"
+
+#include <QWidget>
+#include <QLabel>
+
+#include <unordered_map>
 
 namespace Ui {
 class Management;
@@ -23,6 +27,8 @@ private:
     Ui::Management *ui;
     Connor_Socket::Server *_server;
     std::thread *_thread;
+
+    std::unordered_map<int, QLabel*> _labels;
 };
 
 #endif // MANAGEMENT_H

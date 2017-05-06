@@ -47,5 +47,6 @@ Temporary Items
 *release
 ui
 *user
+*.autosave
 Makefile
 

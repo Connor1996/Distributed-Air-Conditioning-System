@@ -6,7 +6,7 @@
 
 #include "src/include/json.hpp"
 #include "src/protocol.h"
-
+#include <algorithm>
 #include <QMessageBox>
 #include <QTimer>
 
@@ -36,12 +36,39 @@ Management::~Management()
 }
 
 #define DEFAULT_TEMP 18
+#define ROW 2
+#define COL 4
 void Management::InitWidget() {
     ui->tempNumber->display(DEFAULT_TEMP);
+
+    // 把每个房间的图标及信息加载到gridlayout中
+
+    for (auto row = 1; row <= ROW; row++)
+    {
+        for (auto col = 1; col <= COL; col++) {
+            QVBoxLayout *rowlayout = new QVBoxLayout();
+
+            // 显示房间号
+            QLabel *textLabel = new QLabel();
+            textLabel->setText(QString::number(410 + (row - 1) * COL + col));
+            textLabel->setStyleSheet("font: 75 13pt \"Arial Black\"");
+            textLabel->setAlignment(Qt::AlignCenter);
+
+            // 显示房间图标
+            QLabel *picLabel = new QLabel();
+            QPixmap pic(":/server/checkout");
+            picLabel->setPixmap(pic);
+
+            rowlayout->addWidget(textLabel);
+            rowlayout->addWidget(picLabel);
+            _labels.emplace(std::make_pair(410 + (row - 1) * COL + col, picLabel));
+            ui->gridLayout->addLayout(rowlayout, row, col);
+        }
+    }
 }
+
 #define MIN_TEMP 16
 #define MAX_TEMP 30
-
 void Management::InitConnect() {
     connect(ui->tempDownButton, &QPushButton::clicked, [this](){
         ui->tempNumber->display(max(MIN_TEMP, ui->tempNumber->intValue() - 1));
@@ -60,8 +87,10 @@ void Management::InitConnect() {
         }
 
         std::string userId = ui->userIdEdit->text().toStdString();
-        if (_server->CheckIn(roomId, userId))
+        if (_server->CheckIn(roomId, userId)) {
+            _labels[roomId]->setPixmap(QPixmap(":/server/checkin"));
             QMessageBox::information(this, "info", "check in successful");
+        }
         else
             QMessageBox::information(this, "info", "already check in");
 
@@ -72,12 +101,17 @@ void Management::InitConnect() {
         int roomId = ui->roomId->currentText().toInt();
         if (!_server->CheckOut(roomId))
             QMessageBox::information(this, "info", "this roomId is not checked in");
-        else
+        else {
+            _labels[roomId]->setPixmap(QPixmap(":/server/checkout"));
             QMessageBox::information(this, "info", "check out successful");
+        }
 
         ui->userIdEdit->clear();
     });
 }
+
+
+
 
 
 
