@@ -22,7 +22,7 @@ private:
 
     Ui::Management *ui;
     Connor_Socket::Server *_server;
-
+    std::thread *_thread;
 };
 
 #endif // MANAGEMENT_H

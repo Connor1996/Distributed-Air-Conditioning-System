@@ -33,6 +33,17 @@ Server::Server() : _setting({false, 25}), _count(0)
     }
     std::cout << "Wait for connection..." << std::endl;
 
+}
+
+Server::~Server()
+{
+    shutdown(_listeningSocket, SD_BOTH);
+    closesocket(_listeningSocket);
+}
+
+void Server::Start()
+{
+
     //各个连接客户端线程输出信息锁
     std::mutex mtx;
     // 不断等待客户端请求的到来
@@ -103,12 +114,6 @@ Server::Server() : _setting({false, 25}), _count(0)
 
         _socketThreads.back().detach(); //使子线程独立运行
     }
-}
-
-Server::~Server()
-{
-    shutdown(_listeningSocket, SD_BOTH);
-    closesocket(_listeningSocket);
 }
 
 bool Server::Online(int roomId, Dispatcher* connection)

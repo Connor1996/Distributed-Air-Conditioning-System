@@ -25,6 +25,8 @@ public:
 
     ~Server();
 
+    void Start();
+
     bool Online(int roomId, Dispatcher* connection);
 
     void Offline(int roomId);

@@ -15,13 +15,14 @@ using json = nlohmann::json;
 
 
 Management::Management(QWidget *parent) :
-    QWidget(parent), _server(nullptr),
+    QWidget(parent),
+    _thread(new std::thread([this](){
+        _server = new Server();
+        _server->Start();
+    })),
     ui(new Ui::Management)
 {
     ui->setupUi(this);
-    std::thread *thread = new std::thread([&](){
-        _server = new Server();
-    });
     InitWidget();
     InitConnect();
 
@@ -31,7 +32,7 @@ Management::~Management()
 {
     delete ui;
     delete _server;
-    //delete thread;
+    delete _thread;
 }
 
 #define DEFAULT_TEMP 18
@@ -54,7 +55,7 @@ void Management::InitConnect() {
         int roomId;
         try {
             roomId = ui->roomIdEdit->text().toInt();
-        } catch (std::exception e) {
+        } catch (std::exception) {
             QMessageBox::information(this, "info", "please input digital roomid");
         }
 
@@ -63,6 +64,9 @@ void Management::InitConnect() {
             QMessageBox::information(this, "info", "check in successful");
         else
             QMessageBox::information(this, "info", "already check in");
+
+        ui->userIdEdit->clear();
+        ui->roomIdEdit->clear();
     });
 
     connect(ui->checkOutButton, &QPushButton::clicked, [this](){
