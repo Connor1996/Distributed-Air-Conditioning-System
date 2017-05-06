@@ -6,9 +6,7 @@
 
 #include "src/include/json.hpp"
 #include "src/protocol.h"
-#include <algorithm>
 #include <QMessageBox>
-#include <QTimer>
 
 using Connor_Socket::Server;
 using json = nlohmann::json;
@@ -16,11 +14,12 @@ using json = nlohmann::json;
 
 Management::Management(QWidget *parent) :
     QWidget(parent),
-    _thread(new std::thread([this](){
+    _roomIds({411, 412, 413, 414, 415, 416, 417, 418}),
+    _serverThread(new std::thread([this](){
         _server = new Server();
         _server->Start();
     })),
-    _roomIds({411, 412, 413, 414, 415, 416, 417, 418}),
+    _updateThread(nullptr),
     ui(new Ui::Management)
 {
     ui->setupUi(this);
@@ -32,7 +31,8 @@ Management::~Management()
 {
     delete ui;
     delete _server;
-    delete _thread;
+    delete _serverThread;
+    delete _updateThread;
 }
 
 #define DEFAULT_TEMP 18
@@ -75,7 +75,7 @@ void Management::InitWidget() {
             QHBoxLayout *childLayout = new QHBoxLayout();
             QLabel *fanLabel = new QLabel();
             fanLabel->setPixmap(QPixmap(":/server/fan").scaled(30, 30, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-
+            fanLabel->setAlignment(Qt::AlignCenter);
             auto createLCDNumber = [](){
                 auto tmp = new QLCDNumber(2);
                 tmp->setFrameShape(QFrame::NoFrame);
@@ -91,7 +91,8 @@ void Management::InitWidget() {
             rowlayout->addWidget(textLabel);
             rowlayout->addWidget(picLabel);
             rowlayout->addLayout(childLayout);
-            _labels.emplace(std::make_pair(410 + (row - 1) * COL + col, picLabel));
+            _labels.emplace(std::make_pair(410 + (row - 1) * COL + col,
+                                           RoomLabels{picLabel, fanLabel, setTemp, realTemp}));
             ui->gridLayout->addLayout(rowlayout, row, col);
         }
     }
@@ -118,7 +119,7 @@ void Management::InitConnect() {
 
         std::string userId = ui->userIdEdit->text().toStdString();
         if (_server->CheckIn(roomId, userId)) {
-            _labels[roomId]->setPixmap(QPixmap(":/server/checkin"));
+            _labels[roomId].picLabel->setPixmap(QPixmap(":/server/checkin"));
             QMessageBox::information(this, "info", "check in successful");
         }
         else
@@ -132,7 +133,7 @@ void Management::InitConnect() {
         if (!_server->CheckOut(roomId))
             QMessageBox::information(this, "info", "this roomId is not checked in");
         else {
-            _labels[roomId]->setPixmap(QPixmap(":/server/checkout"));
+            _labels[roomId].picLabel->setPixmap(QPixmap(":/server/checkout"));
             QMessageBox::information(this, "info", "check out successful");
         }
 
@@ -144,15 +145,29 @@ void Management::InitConnect() {
         ui->tempUpButton->setEnabled(!ui->tempUpButton->isEnabled());
         ui->tempDownButton->setEnabled(!ui->tempDownButton->isEnabled());
         ui->modeButton->setEnabled(!ui->modeButton->isEnabled());
+
+        if (ui->tempNumber->isEnabled()) {
+            if (_updateThread)
+                delete _updateThread;
+
+            _updateThread = new std::thread([this](){
+                while(true) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                    if (!ui->tempNumber->isEnabled())
+                        return;
+                    for (const auto& pair : _server->GetRoomMap()) {
+                        std::cout << pair.first << std::endl;
+                        const auto& state = _server->GetRoomState(pair.first);
+                        if (state.isOn) {
+
+                        }
+                    }
+                }
+            });
+        }
     });
 }
 
-//void Management::paintEvent(QPaintEvent *) {
-//    for (const auto& roomId : _roomIds) {
-//        const auto state = _server->GetRoomState(roomId);
-
-//    }
-//}
 
 
 

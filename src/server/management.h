@@ -5,6 +5,7 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QLCDNumber>
 
 #include <unordered_map>
 
@@ -26,9 +27,17 @@ private:
 
     Ui::Management *ui;
     Connor_Socket::Server *_server;
-    std::thread *_thread;
+    std::thread *_serverThread;
+    std::thread *_updateThread;
 
-    std::unordered_map<int, QLabel*> _labels;
+    struct RoomLabels {
+        QLabel *picLabel;
+        QLabel *fanLabel;
+        QLCDNumber *setTemp;
+        QLCDNumber *realTemp;
+    };
+
+    std::unordered_map<int, struct RoomLabels> _labels;
     std::list<int> _roomIds;
 };
 

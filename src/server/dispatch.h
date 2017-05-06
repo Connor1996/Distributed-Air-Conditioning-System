@@ -50,6 +50,7 @@ public:
     void Logout();
 
     // 获取Dispatcher的内部状态
+    const struct State& GetState() { return _state; }
 private:
     // 代表用户处于什么状态，如在线空闲或对战
     struct State _state;

@@ -37,6 +37,10 @@ public:
 
     const struct Setting& GetSetting() { return _setting; }
     const struct State& GetRoomState(int roomId);
+    const std::unordered_map<int, Dispatcher*>& GetRoomMap() {
+        return _dispatchers;
+    }
+
 protected:
     // 监听客户端访问的socket
     SOCKET _listeningSocket;
