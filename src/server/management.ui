@@ -106,46 +106,6 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
-               <item>
-                <property name="text">
-                 <string>411</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>412</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>413</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>414</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>415</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>416</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>417</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>418</string>
-                </property>
-               </item>
               </widget>
              </item>
             </layout>

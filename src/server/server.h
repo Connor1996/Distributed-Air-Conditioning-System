@@ -35,8 +35,8 @@ public:
 
     bool CheckOut(int roomId);
 
-    struct Setting GetSetting() { return _setting; }
-
+    const struct Setting& GetSetting() { return _setting; }
+    const struct State& GetRoomState(int roomId);
 protected:
     // 监听客户端访问的socket
     SOCKET _listeningSocket;
@@ -48,7 +48,7 @@ protected:
     std::vector<std::thread> _socketThreads;
 
     // 持有用户名相对应的dispathcer
-    std::unordered_map<int, Dispatcher*> _sockets;
+    std::unordered_map<int, Dispatcher*> _dispatchers;
 
     std::unordered_map<int, std::string> _rooms;
 

@@ -39,6 +39,7 @@ Server::~Server()
 {
     shutdown(_listeningSocket, SD_BOTH);
     closesocket(_listeningSocket);
+    std::cout << "Server is closed" << std::endl;
 }
 
 void Server::Start()
@@ -120,14 +121,14 @@ bool Server::Online(int roomId, Dispatcher* connection)
 {
     // emplace返回一个pair，第二个元素为是否成功插入
     // 若map中已经有一个同插入相同的key，则不进行插入
-    auto result = _sockets.emplace(std::make_pair(roomId, connection));
+    auto result = _dispatchers.emplace(std::make_pair(roomId, connection));
     return result.second;
 }
 
 void Server::Offline(int roomId)
 {
     // 将用户名从在线列表移除
-    _sockets.erase(roomId);
+    _dispatchers.erase(roomId);
 }
 
 bool Server::CheckIn(int roomId, std::string userId) {
@@ -135,6 +136,9 @@ bool Server::CheckIn(int roomId, std::string userId) {
     return result.second;
 }
 
+const struct State& Server::GetRoomState(int roomId) {
+    return (_dispatchers[roomId])->GetState();
+}
 
 bool Server::CheckOut(int roomId) {
     if (_rooms.find(roomId) == _rooms.end())

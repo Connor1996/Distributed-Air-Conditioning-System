@@ -32,10 +32,7 @@ public:
     //      parent      server对象指针
     Dispatcher(SOCKET &connection, Connor_Socket::Server *parent)
         : _connection(connection), _parent(parent), _state({false, false, 0, 0})
-    {
-        // 初始化随机种子
-        srand((unsigned int)time(NULL));
-    }
+    { }
 
     // 根据请求信息，分发到相应的函数处理请求
     // @param:
@@ -53,7 +50,6 @@ public:
     void Logout();
 
     // 获取Dispatcher的内部状态
-    struct State getState() { return _state; }
 private:
     // 代表用户处于什么状态，如在线空闲或对战
     struct State _state;

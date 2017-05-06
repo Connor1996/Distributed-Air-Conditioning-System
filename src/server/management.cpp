@@ -20,12 +20,12 @@ Management::Management(QWidget *parent) :
         _server = new Server();
         _server->Start();
     })),
+    _roomIds({411, 412, 413, 414, 415, 416, 417, 418}),
     ui(new Ui::Management)
 {
     ui->setupUi(this);
     InitWidget();
     InitConnect();
-
 }
 
 Management::~Management()
@@ -41,26 +41,56 @@ Management::~Management()
 void Management::InitWidget() {
     ui->tempNumber->display(DEFAULT_TEMP);
 
-    // 把每个房间的图标及信息加载到gridlayout中
+    // 默认未打开电源，按钮均无法使用
+    ui->tempNumber->setEnabled(false);
+    ui->tempUpButton->setEnabled(false);
+    ui->tempDownButton->setEnabled(false);
+    ui->modeButton->setEnabled(false);
 
+
+    // 加载房间号
+    for (const auto& roomId : _roomIds) {
+        ui->roomId->addItem(QString::number(roomId));
+    }
+
+
+    // 把每个房间的图标及信息加载到gridlayout中
     for (auto row = 1; row <= ROW; row++)
     {
         for (auto col = 1; col <= COL; col++) {
             QVBoxLayout *rowlayout = new QVBoxLayout();
 
-            // 显示房间号
+            // 构造房间号
             QLabel *textLabel = new QLabel();
             textLabel->setText(QString::number(410 + (row - 1) * COL + col));
             textLabel->setStyleSheet("font: 75 13pt \"Arial Black\"");
             textLabel->setAlignment(Qt::AlignCenter);
 
-            // 显示房间图标
+            // 构造房间图标
             QLabel *picLabel = new QLabel();
-            QPixmap pic(":/server/checkout");
-            picLabel->setPixmap(pic);
+            picLabel->setPixmap(QPixmap(":/server/checkout"));
+            picLabel->setAlignment(Qt::AlignCenter);
+
+            // 构造运行图标及温度
+            QHBoxLayout *childLayout = new QHBoxLayout();
+            QLabel *fanLabel = new QLabel();
+            fanLabel->setPixmap(QPixmap(":/server/fan").scaled(30, 30, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
+            auto createLCDNumber = [](){
+                auto tmp = new QLCDNumber(2);
+                tmp->setFrameShape(QFrame::NoFrame);
+                return tmp;
+            };
+
+            QLCDNumber *setTemp = createLCDNumber();
+            QLCDNumber *realTemp = createLCDNumber();
+            childLayout->addWidget(fanLabel);
+            childLayout->addWidget(setTemp);
+            childLayout->addWidget(realTemp);
 
             rowlayout->addWidget(textLabel);
             rowlayout->addWidget(picLabel);
+            rowlayout->addLayout(childLayout);
             _labels.emplace(std::make_pair(410 + (row - 1) * COL + col, picLabel));
             ui->gridLayout->addLayout(rowlayout, row, col);
         }
@@ -108,9 +138,21 @@ void Management::InitConnect() {
 
         ui->userIdEdit->clear();
     });
+
+    connect(ui->powerButton, &QPushButton::clicked, [this](){
+        ui->tempNumber->setEnabled(!ui->tempNumber->isEnabled());
+        ui->tempUpButton->setEnabled(!ui->tempUpButton->isEnabled());
+        ui->tempDownButton->setEnabled(!ui->tempDownButton->isEnabled());
+        ui->modeButton->setEnabled(!ui->modeButton->isEnabled());
+    });
 }
 
+//void Management::paintEvent(QPaintEvent *) {
+//    for (const auto& roomId : _roomIds) {
+//        const auto state = _server->GetRoomState(roomId);
 
+//    }
+//}
 
 
 

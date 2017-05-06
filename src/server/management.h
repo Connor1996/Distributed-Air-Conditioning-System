@@ -29,6 +29,7 @@ private:
     std::thread *_thread;
 
     std::unordered_map<int, QLabel*> _labels;
+    std::list<int> _roomIds;
 };
 
 #endif // MANAGEMENT_H
