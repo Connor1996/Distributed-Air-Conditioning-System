@@ -137,7 +137,7 @@ bool Server::CheckIn(int roomId, std::string userId) {
 }
 
 const struct State& Server::GetRoomState(int roomId) {
-    return (_dispatchers[roomId])->GetState();
+    return _dispatchers[roomId]->GetState();
 }
 
 bool Server::CheckOut(int roomId) {

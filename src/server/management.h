@@ -8,6 +8,7 @@
 #include <QLCDNumber>
 
 #include <unordered_map>
+#include "rotationlabel.h"
 
 namespace Ui {
 class Management;
@@ -32,7 +33,7 @@ private:
 
     struct RoomLabels {
         QLabel *picLabel;
-        QLabel *fanLabel;
+        RotationLabel *fanLabel;
         QLCDNumber *setTemp;
         QLCDNumber *realTemp;
     };

@@ -27,7 +27,8 @@ debug {
 HEADERS += \
         src/socket.h \
         src/protocol.h \
-        src/include/json.hpp
+        src/include/json.hpp \
+    src/server/rotationlabel.h
 
 UI_DIR = ./ui
 
@@ -79,3 +80,5 @@ Server{
 
 RESOURCES += \
     image/image.qrc
+
+SOURCES +=

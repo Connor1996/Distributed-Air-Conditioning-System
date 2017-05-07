@@ -6,7 +6,11 @@
 
 #include "src/include/json.hpp"
 #include "src/protocol.h"
+#include "rotationlabel.h"
+
 #include <QMessageBox>
+#include <QPropertyAnimation>
+#include <QGraphicsView>
 
 using Connor_Socket::Server;
 using json = nlohmann::json;
@@ -71,14 +75,17 @@ void Management::InitWidget() {
             picLabel->setPixmap(QPixmap(":/server/checkout"));
             picLabel->setAlignment(Qt::AlignCenter);
 
+
             // 构造运行图标及温度
             QHBoxLayout *childLayout = new QHBoxLayout();
-            QLabel *fanLabel = new QLabel();
-            fanLabel->setPixmap(QPixmap(":/server/fan").scaled(30, 30, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
+            RotationLabel *fanLabel = new RotationLabel();
             fanLabel->setAlignment(Qt::AlignCenter);
+
             auto createLCDNumber = [](){
                 auto tmp = new QLCDNumber(2);
                 tmp->setFrameShape(QFrame::NoFrame);
+                tmp->setSegmentStyle(QLCDNumber::SegmentStyle::Flat);
                 return tmp;
             };
 
@@ -91,6 +98,7 @@ void Management::InitWidget() {
             rowlayout->addWidget(textLabel);
             rowlayout->addWidget(picLabel);
             rowlayout->addLayout(childLayout);
+            rowlayout->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
             _labels.emplace(std::make_pair(410 + (row - 1) * COL + col,
                                            RoomLabels{picLabel, fanLabel, setTemp, realTemp}));
             ui->gridLayout->addLayout(rowlayout, row, col);
@@ -156,11 +164,13 @@ void Management::InitConnect() {
                     if (!ui->tempNumber->isEnabled())
                         return;
                     for (const auto& pair : _server->GetRoomMap()) {
-                        std::cout << pair.first << std::endl;
                         const auto& state = _server->GetRoomState(pair.first);
-                        if (state.isOn) {
-
-                        }
+                        _labels[pair.first].setTemp->display(state.setTemperature);
+                        _labels[pair.first].realTemp->display(state.realTemperature);
+                        if (state.isOn)
+                            _labels[pair.first].fanLabel->Start();
+                        else
+                            _labels[pair.first].fanLabel->Stop();
                     }
                 }
             });

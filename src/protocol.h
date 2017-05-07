@@ -53,4 +53,4 @@
 // int speed = 1..3
 
 
-#endif PROTOCOL_H
+#endif //PROTOCOL_H

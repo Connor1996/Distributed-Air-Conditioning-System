@@ -123,6 +123,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
                <property name="text">
                 <string>身份证号</string>
                </property>
@@ -284,6 +287,9 @@
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
              </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
              <property name="digitCount">
               <number>2</number>
              </property>
@@ -404,7 +410,7 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>40</width>
+       <width>20</width>
        <height>20</height>
       </size>
      </property>
