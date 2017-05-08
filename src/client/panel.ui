@@ -259,8 +259,8 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>283</x>
-      <y>130</y>
+      <x>100</x>
+      <y>220</y>
       <width>121</width>
       <height>20</height>
      </rect>
@@ -272,8 +272,8 @@
    <widget class="QLabel" name="originalTemp">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>130</y>
+      <x>230</x>
+      <y>230</y>
       <width>54</width>
       <height>12</height>
      </rect>

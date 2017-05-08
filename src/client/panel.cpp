@@ -53,6 +53,7 @@ void Panel::InitWidget() {
     tempTimer = new QTimer();
     notifyTimer = new QTimer();
     recoveryTimer = new QTimer();
+    DisableItems();
 }
 
 void Panel::InitConnect() {
@@ -69,7 +70,6 @@ void Panel::InitConnect() {
 }
 
 void Panel::UpdateRequest() {
-    ca.is_heat_mode = ca.expTemp > ca.temp ? true : false;
     json sendInfo = {
         {"op", REQ_UPDATE},
         {"is_heat_mode", ca.is_heat_mode},
@@ -80,17 +80,28 @@ void Panel::UpdateRequest() {
 }
 
 void Panel::DisableItems() {
-    ui->controller->setEnabled(false);
+    ui->tempUp->setEnabled(false);
+    ui->tempDown->setEnabled(false);
+    ui->windUp->setEnabled(false);
+    ui->windDown->setEnabled(false);
+    ui->modeButton->setEnabled(false);
     ui->logOutButton->setEnabled(true);
     ui->switchButton->setEnabled(true);
-    tempTimer->stop();
-    notifyTimer->stop();
-    recoveryTimer->stop();
+    if (tempTimer->isActive())
+        tempTimer->stop();
+    if (notifyTimer->isActive())
+        notifyTimer->stop();
+    if (recoveryTimer->isActive())
+        recoveryTimer->stop();
 }
 
 
 void Panel::EnableItems() {
-    ui->controller->setEnabled(true);
+    ui->tempUp->setEnabled(true);
+    ui->tempDown->setEnabled(true);
+    ui->windUp->setEnabled(true);
+    ui->windDown->setEnabled(true);
+    ui->modeButton->setEnabled(true);
     ui->windSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
     ui->mode->setText(QString::fromWCharArray(L"制冷"));
     QString t = QString::number(ca.temp) + " Centigrade";
@@ -101,6 +112,7 @@ void Panel::EnableItems() {
 }
 
 void Panel::Show(Connor_Socket::Client* c) {
+    std::cout << "show";
     _client = c;
     InitWidget();
     InitConnect();
@@ -190,6 +202,7 @@ void Panel::SwitchClicked() {
 }
 
 void Panel::AdjustTemp() {
+    std::cout << "is_heat_mode:" << ca.is_heat_mode << " temp:" << ca.temp << " expTemp:" << ca.expTemp << std::endl;
     if (ca.expTemp > ca.temp) {
         ca.temp = ca.temp + 1 > ca.expTemp ? ca.expTemp : ca.temp + 1;
         this->ui->temperature->setText(QString::number(ca.temp) + " Centigrade");
