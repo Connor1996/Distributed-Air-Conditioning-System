@@ -46,31 +46,33 @@ Panel::Panel(QWidget *parent) :
 Panel::~Panel()
 {
     delete ui;
-    delete tempTimer, notifyTimer;
+    if (tempTimer != NULL) {
+        delete tempTimer;
+        tempTimer = NULL;
+    }
+    if (notifyTimer != NULL) {
+        delete notifyTimer;
+        notifyTimer = NULL;
+    }
+    if (recoveryTimer != NULL) {
+        delete recoveryTimer;
+        recoveryTimer = NULL;
+    }
     if (_client != NULL) {
         delete _client;
         _client = NULL;
     }
 }
 
-void Panel::Show(Connor_Socket::Client* c) {
-    std::cout << "panel show" << std::endl;
-    _client = c;
-    InitWidget();
-    InitConnect();
-    this->show();
-}
-
 void Panel::InitWidget() {
-    ca.expTemp = ca.temp = (int)TempRange::LOWER_BOUND + Random((int)TempRange::UPPER_BOUND - (int)TempRange::LOWER_BOUND);
+    ca.onoff = Switch::OFF;
+    ca.is_heat_mode = false;
     ca.speed = Speed::NORMAL_SPEED;
-    QString t = QString::fromStdString(itos(ca.temp) + " Centigrade");
-    ui->temperature->setText(t);
-    ui->expectedTemp->setText(t);
-    ui->WindSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
+    ca.expTemp = ca.temp = ca.original_temp = (int)TempRange::LOWER_BOUND +
+            Random((int)TempRange::UPPER_BOUND - (int)TempRange::LOWER_BOUND);
     tempTimer = new QTimer();
     notifyTimer = new QTimer();
-    notifyTimer->start(1000);
+    recoveryTimer = new QTimer();
 }
 
 void Panel::InitConnect() {
@@ -79,8 +81,10 @@ void Panel::InitConnect() {
     QObject::connect(ui->tempDown, SIGNAL(clicked(bool)), this, SLOT(TempDownClicked()));
     QObject::connect(ui->windUp, SIGNAL(clicked(bool)), this, SLOT(WindUpClicked()));
     QObject::connect(ui->windDown, SIGNAL(clicked(bool)), this, SLOT(WindDownClicked()));
-    QObject::connect(this->tempTimer, SIGNAL(timeout()), this, SLOT(UpdateTemp()));
-    QObject::connect(this->notifyTimer, SIGNAL(timeout()), this, SLOT(UpdateSetting()));
+    QObject::connect(ui->modeButton, SIGNAL(clicked(bool)), this, SLOT(ModeClicked()));
+    QObject::connect(this->tempTimer, SIGNAL(timeout()), this, SLOT(AdjustTemp()));
+    QObject::connect(this->notifyTimer, SIGNAL(timeout()), this, SLOT(ReportState()));
+    QObject::connect(this->recoveryTimer, SIGNAL(timeout()), this, SLOT(RecoverTemp()));
 }
 
 void Panel::UpdateRequest() {
@@ -94,21 +98,39 @@ void Panel::UpdateRequest() {
     _client->Send(sendInfo.dump());
 }
 
-void Panel::UpdateSetting() {
-    ca.is_heat_mode = ca.expTemp > ca.temp ? true : false;
-    json sendInfo = {
-        {"op", REPORT_STATE},
-        {"set_temp", ca.expTemp},
-        {"real_temp", ca.temp},
-        {"speed", TempInc[(int)ca.speed]}
-    };
-    _client->Send(sendInfo.dump());
+void Panel::DisableItems() {
+    ui->controller->setEnabled(false);
+    ui->logOutButton->setEnabled(true);
+    ui->switchButton->setEnabled(true);
+    tempTimer->stop();
+    notifyTimer->stop();
+    recoveryTimer->stop();
+}
+
+
+void Panel::EnableItems() {
+    ui->controller->setEnabled(true);
+    ui->windSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
+    ui->mode->setText(QString::fromWCharArray(L"制冷"));
+    QString t = QString::fromStdString(itos(ca.temp) + " Centigrade");
+    ui->temperature->setText(t);
+    ui->expectedTemp->setText(t);
+    ui->originalTemp->setText(t);
+    notifyTimer->start(NOTIFY_PERIOD);
+}
+
+void Panel::Show(Connor_Socket::Client* c) {
+    _client = c;
+    InitWidget();
+    InitConnect();
+    this->show();
 }
 
 void Panel::LogOutClicked() {
     json sendInfo = {{"op", REQ_STOP}};
     _client->Send(sendInfo.dump());
-
+    delete tempTimer, notifyTimer, recoveryTimer;
+    tempTimer = notifyTimer = recoveryTimer = NULL;
     this->close();
     emit toLogIn();
 }
@@ -117,7 +139,8 @@ void Panel::TempUpClicked() {
     if (this->ca.expTemp != (int)TempRange::UPPER_BOUND) {
         ca.expTemp++;
         this->ui->expectedTemp->setText(QString::fromStdString(itos(ca.expTemp) + " Centigrade"));
-        if (!tempTimer->isActive())
+        if (!tempTimer->isActive() &&
+                (ca.is_heat_mode && ca.temp < ca.expTemp || !ca.is_heat_mode && ca.temp > ca.expTemp))
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         json sendInfo = {{"op", REQ_RESUME}};
         _client->Send(sendInfo.dump());
@@ -129,7 +152,8 @@ void Panel::TempDownClicked() {
     if (this->ca.expTemp != (int)TempRange::LOWER_BOUND) {
         ca.expTemp--;
         this->ui->expectedTemp->setText(QString::fromStdString(itos(ca.expTemp) + " Centigrade"));
-        if (!tempTimer->isActive())
+        if (!tempTimer->isActive() &&
+                (ca.is_heat_mode && ca.temp < ca.expTemp || !ca.is_heat_mode && ca.temp > ca.expTemp))
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         json sendInfo = {{"op", REQ_RESUME}};
         _client->Send(sendInfo.dump());
@@ -140,7 +164,7 @@ void Panel::TempDownClicked() {
 void Panel::WindUpClicked() {
     if (this->ca.speed != Speed::FAST_SPEED) {
         this->ca.speed = (Speed)(((int)this->ca.speed) + 1);
-        this->ui->WindSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
+        this->ui->windSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
         if (tempTimer->isActive()) {
             tempTimer->stop();
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
@@ -152,7 +176,7 @@ void Panel::WindUpClicked() {
 void Panel::WindDownClicked() {
     if (this->ca.speed != Speed::SLOW_SPEED) {
         this->ca.speed = (Speed)(((int)this->ca.speed) - 1);
-        this->ui->WindSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
+        this->ui->windSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
         if (tempTimer->isActive()) {
             tempTimer->stop();
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
@@ -161,7 +185,30 @@ void Panel::WindDownClicked() {
     }
 }
 
-void Panel::UpdateTemp() {
+void Panel::ModeClicked() {
+    ca.is_heat_mode = !ca.is_heat_mode;
+    UpdateRequest();
+    this->ui->mode->setText(QString::fromWCharArray(ca.is_heat_mode ? L"制热" : L"制冷"));
+}
+
+void Panel::SwitchClicked() {
+    if (ca.onoff == Switch::OFF) {
+        ca.onoff = Switch::ON;
+        EnableItems();
+        json sendInfo = {{"op", REQ_RESUME}};
+        _client->Send(sendInfo.dump());
+        UpdateRequest();
+    }
+    else {
+        ca.onoff = Switch::OFF;
+        DisableItems();
+        json sendInfo = {{"op", REQ_STOP}};
+        _client->Send(sendInfo.dump());
+        recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
+    }
+}
+
+void Panel::AdjustTemp() {
     if (ca.expTemp > ca.temp) {
         ca.temp = ca.temp + 1 > ca.expTemp ? ca.expTemp : ca.temp + 1;
         this->ui->temperature->setText(QString::fromStdString(itos(ca.temp) + " Centigrade"));
@@ -175,5 +222,39 @@ void Panel::UpdateTemp() {
             tempTimer->stop();
         json sendInfo = {{"op", REQ_STOP}};
         _client->Send(sendInfo.dump());
+        recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
+    }
+}
+
+void Panel::ReportState() {
+    json sendInfo = {
+        {"op", REPORT_STATE},
+        {"set_temp", ca.expTemp},
+        {"real_temp", ca.temp},
+        {"speed", TempInc[(int)ca.speed]}
+    };
+    _client->Send(sendInfo.dump());
+}
+
+void Panel::RecoverTemp() {
+    //温度恢复到可以忍受的最大范围
+    if (ca.onoff == Switch::ON && abs(ca.expTemp - ca.temp) == TEMP_BEAR_RANGE) {
+        recoveryTimer->stop();
+        tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
+        json sendInfo = {{"op", REQ_RESUME}};
+        _client->Send(sendInfo.dump());
+    }
+    else if (ca.temp == ca.original_temp) {
+        recoveryTimer->stop();
+    }
+    else {
+        if (ca.temp < ca.original_temp) {
+            ca.temp = ca.temp + 1 > ca.original_temp ? ca.original_temp : ca.temp + 1;
+            this->ui->temperature->setText(QString::fromStdString(itos(ca.temp) + " Centigrade"));
+        }
+        if (ca.temp > ca.original_temp) {
+            ca.temp = ca.temp - 1 < ca.original_temp ? ca.original_temp : ca.temp - 1;
+            this->ui->temperature->setText(QString::fromStdString(itos(ca.temp) + " Centigrade"));
+        }
     }
 }

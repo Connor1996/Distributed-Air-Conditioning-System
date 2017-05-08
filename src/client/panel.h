@@ -5,6 +5,8 @@
 #include "client.h"
 #include "conditionorattr.h"
 
+const int NOTIFY_PERIOD = 1000;
+
 namespace Ui {
 class Panel;
 }
@@ -21,10 +23,12 @@ private:
     void InitWidget();
     void InitConnect();
     void UpdateRequest();
+    void DisableItems();
+    void EnableItems();
     Ui::Panel *ui;
     Connor_Socket::Client *_client;
     ConditionorAttr ca;
-    QTimer* tempTimer, *notifyTimer;
+    QTimer* tempTimer, *notifyTimer, *recoveryTimer;
 
 signals:
     void toLogIn();
@@ -36,8 +40,11 @@ private slots:
     void TempDownClicked();
     void WindUpClicked();
     void WindDownClicked();
-    void UpdateTemp();
-    void UpdateSetting();
+    void ModeClicked();
+    void SwitchClicked();
+    void AdjustTemp();
+    void ReportState();
+    void RecoverTemp();
 };
 
 #endif // PANEL_H
