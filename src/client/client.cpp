@@ -29,8 +29,8 @@
         }
 
         //设置发送时限
-        int nNetTimeout = 1000;
-        setsockopt(_connectSocket, SOL_SOCKET, SO_SNDTIMEO, (char *)&nNetTimeout, sizeof(int));
+        //int nNetTimeout = 1000;
+        //setsockopt(_connectSocket, SOL_SOCKET, SO_SNDTIMEO, (char *)&nNetTimeout, sizeof(int));
 
         cout << "Initial success" << endl;
     }

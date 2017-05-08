@@ -6,6 +6,7 @@
 #include "conditionorattr.h"
 
 const int NOTIFY_PERIOD = 1000;
+const int SEND_WAIT_PERIOD = 1000;
 
 namespace Ui {
 class Panel;
@@ -22,13 +23,13 @@ public:
 private:
     void InitWidget();
     void InitConnect();
-    void UpdateRequest();
+    bool UpdateRequest();
     void DisableItems();
     void EnableItems();
     Ui::Panel *ui;
     Connor_Socket::Client *_client;
     ConditionorAttr ca;
-    QTimer* tempTimer, *notifyTimer, *recoveryTimer;
+    QTimer* tempTimer, *notifyTimer, *recoveryTimer, *sendTimer;
 
 signals:
     void toLogIn();
@@ -45,6 +46,7 @@ private slots:
     void AdjustTemp();
     void ReportState();
     void RecoverTemp();
+    void SendNow();
 };
 
 #endif // PANEL_H
