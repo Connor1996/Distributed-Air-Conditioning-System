@@ -28,14 +28,6 @@ unsigned int Random(int max)
    return (unsigned int)((double)number / ((double)UINT_MAX + 1) * double(max)) + 1;
 }
 
-std::string itos(int n) {
-    std::stringstream ss;
-    ss << n;
-    std::string s;
-    ss >> s;
-    return s;
-}
-
 Panel::Panel(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Panel)
@@ -46,22 +38,10 @@ Panel::Panel(QWidget *parent) :
 Panel::~Panel()
 {
     delete ui;
-    if (tempTimer != NULL) {
-        delete tempTimer;
-        tempTimer = NULL;
-    }
-    if (notifyTimer != NULL) {
-        delete notifyTimer;
-        notifyTimer = NULL;
-    }
-    if (recoveryTimer != NULL) {
-        delete recoveryTimer;
-        recoveryTimer = NULL;
-    }
-    if (_client != NULL) {
-        delete _client;
-        _client = NULL;
-    }
+    delete tempTimer;
+    delete notifyTimer;
+    delete recoveryTimer;
+    delete _client;
 }
 
 void Panel::InitWidget() {
@@ -82,6 +62,7 @@ void Panel::InitConnect() {
     QObject::connect(ui->windUp, SIGNAL(clicked(bool)), this, SLOT(WindUpClicked()));
     QObject::connect(ui->windDown, SIGNAL(clicked(bool)), this, SLOT(WindDownClicked()));
     QObject::connect(ui->modeButton, SIGNAL(clicked(bool)), this, SLOT(ModeClicked()));
+    QObject::connect(ui->switchButton, SIGNAL(clicked(bool)), this, SLOT(SwitchClicked()));
     QObject::connect(this->tempTimer, SIGNAL(timeout()), this, SLOT(AdjustTemp()));
     QObject::connect(this->notifyTimer, SIGNAL(timeout()), this, SLOT(ReportState()));
     QObject::connect(this->recoveryTimer, SIGNAL(timeout()), this, SLOT(RecoverTemp()));
@@ -112,7 +93,7 @@ void Panel::EnableItems() {
     ui->controller->setEnabled(true);
     ui->windSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
     ui->mode->setText(QString::fromWCharArray(L"制冷"));
-    QString t = QString::fromStdString(itos(ca.temp) + " Centigrade");
+    QString t = QString::number(ca.temp) + " Centigrade";
     ui->temperature->setText(t);
     ui->expectedTemp->setText(t);
     ui->originalTemp->setText(t);
@@ -138,7 +119,7 @@ void Panel::LogOutClicked() {
 void Panel::TempUpClicked() {
     if (this->ca.expTemp != (int)TempRange::UPPER_BOUND) {
         ca.expTemp++;
-        this->ui->expectedTemp->setText(QString::fromStdString(itos(ca.expTemp) + " Centigrade"));
+        this->ui->expectedTemp->setText(QString::number(ca.expTemp) + " Centigrade");
         if (!tempTimer->isActive() &&
                 (ca.is_heat_mode && ca.temp < ca.expTemp || !ca.is_heat_mode && ca.temp > ca.expTemp))
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
@@ -151,7 +132,7 @@ void Panel::TempUpClicked() {
 void Panel::TempDownClicked() {
     if (this->ca.expTemp != (int)TempRange::LOWER_BOUND) {
         ca.expTemp--;
-        this->ui->expectedTemp->setText(QString::fromStdString(itos(ca.expTemp) + " Centigrade"));
+        this->ui->expectedTemp->setText(QString::number(ca.expTemp) + " Centigrade");
         if (!tempTimer->isActive() &&
                 (ca.is_heat_mode && ca.temp < ca.expTemp || !ca.is_heat_mode && ca.temp > ca.expTemp))
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
@@ -211,11 +192,11 @@ void Panel::SwitchClicked() {
 void Panel::AdjustTemp() {
     if (ca.expTemp > ca.temp) {
         ca.temp = ca.temp + 1 > ca.expTemp ? ca.expTemp : ca.temp + 1;
-        this->ui->temperature->setText(QString::fromStdString(itos(ca.temp) + " Centigrade"));
+        this->ui->temperature->setText(QString::number(ca.temp) + " Centigrade");
     }
     if (ca.expTemp < ca.temp) {
         ca.temp = ca.temp - 1 < ca.expTemp ? ca.expTemp : ca.temp - 1;
-        this->ui->temperature->setText(QString::fromStdString(itos(ca.temp) + " Centigrade"));
+        this->ui->temperature->setText(QString::number(ca.temp) + " Centigrade");
     }
     if (ca.expTemp == ca.temp) {
         if (tempTimer->isActive())
@@ -250,11 +231,11 @@ void Panel::RecoverTemp() {
     else {
         if (ca.temp < ca.original_temp) {
             ca.temp = ca.temp + 1 > ca.original_temp ? ca.original_temp : ca.temp + 1;
-            this->ui->temperature->setText(QString::fromStdString(itos(ca.temp) + " Centigrade"));
+            this->ui->temperature->setText(QString::number(ca.temp) + " Centigrade");
         }
         if (ca.temp > ca.original_temp) {
             ca.temp = ca.temp - 1 < ca.original_temp ? ca.original_temp : ca.temp - 1;
-            this->ui->temperature->setText(QString::fromStdString(itos(ca.temp) + " Centigrade"));
+            this->ui->temperature->setText(QString::number(ca.temp) + " Centigrade");
         }
     }
 }

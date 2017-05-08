@@ -13,7 +13,7 @@ using Connor_Socket::Server;
 using json = nlohmann::json;
 
 Widget::Widget(QWidget *parent) :
-    QWidget(parent),
+    QWidget(parent), window(nullptr),
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
@@ -29,7 +29,7 @@ void Widget::InitConnect()
 {
     // 触发登陆
     connect(ui->loginButton, SIGNAL(clicked()), this, SLOT(Login()));
-    connect(ui->cancelButtion, SIGNAL(clicked(bool)), this, SLOT(Cancel()));
+    connect(ui->cancelButtion, &QPushButton::clicked, [this](){ this->close(); });
 }
 
 Widget::~Widget()
@@ -38,10 +38,6 @@ Widget::~Widget()
     delete window;
 }
 
-
-void Widget::Cancel() {
-    this->close();
-}
 
 void Widget::Login()
 {
