@@ -167,7 +167,7 @@ void Management::InitConnect() {
         ui->modeButton->setEnabled(!ui->modeButton->isEnabled());
 
         if (ui->tempNumber->isEnabled()) {
-            if (_updateThread && _updateThread->joinable())
+            if (_updateThread)
                 delete _updateThread;
 
             _updateThread = new std::thread([this](){
