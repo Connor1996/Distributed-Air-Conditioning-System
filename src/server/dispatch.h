@@ -43,7 +43,6 @@ public:
 
     // 登陆处理逻辑
     json LoginHandle(json&);
-    json UpdateSettingHandle(json&);
     json StateHandle(json&);
 
     // 与该Dispatch绑定用户登出

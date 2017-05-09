@@ -19,20 +19,7 @@ std::string Dispatcher::Dispatch(json requestInfo)
     case LOG_IN_USER:
         responseInfo = LoginHandle(requestInfo);
         break;
-    case REQ_STOP:
-        cout << "stop";
-        _state.isOn = false;
-        break;
-    case REQ_RESUME:
-        cout << "resume";
-        _state.isOn = true;
-        break;
-    case REQ_UPDATE:
-        cout << "update";
-        responseInfo = UpdateSettingHandle(requestInfo);
-        break;
     case REPORT_STATE:
-        cout << "state";
         responseInfo = StateHandle(requestInfo);
         break;
     default:
@@ -58,8 +45,6 @@ json Dispatcher::LoginHandle(json &requestInfo)
             // 检查是否已经在线
             if (_parent->Online(roomId, this)) {
                 responseInfo["ret"] = LOG_IN_SUCC;
-                responseInfo["is_heat_mode"] = true;
-                responseInfo["temp"] = 0;
                 _roomId = roomId;
             }
         }
@@ -69,38 +54,28 @@ json Dispatcher::LoginHandle(json &requestInfo)
     return responseInfo;
 }
 
-json Dispatcher::UpdateSettingHandle(json &requestInfo)
+json Dispatcher::StateHandle(json &requestInfo)
 {
     _state.isHeatMode = requestInfo["is_heat_mode"].get<bool>();
-    _state.setTemperature = requestInfo["temp"].get<int>();
+    _state.realTemperature = requestInfo["real_temp"].get<int>();
+    _state.setTemperature = requestInfo["set_temp"].get<int>();
     _state.speed = requestInfo["speed"].get<int>();
 
     bool isValid = false;
-    if (_parent->_setting.isPowerOn &&
+    if (_parent->_setting.isPowerOn && _state.isOn &&
             _state.isHeatMode == _parent->_setting.isHeatMode) {
         if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
             isValid = true;
         else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature)
             isValid = true;
     }
+
     _state.isOn = isValid;
     json responseInfo = {
         {"ret", REPLY_CON},
-        {"is_valid", isValid}
-    };
-
-    return responseInfo;
-}
-
-json Dispatcher::StateHandle(json &requestInfo)
-{
-    _state.realTemperature = requestInfo["real_temp"].get<int>();
-    _state.setTemperature = requestInfo["set_temp"].get<int>();
-    _state.speed = requestInfo["speed"].get<int>();
-    json responseInfo = {
-        {"ret", REPLY_MONEY},
+        {"is_valid", isValid},
         {"money", 0},
-        {"power", 0}
+        {"power", 0},
     };
 
     return responseInfo;

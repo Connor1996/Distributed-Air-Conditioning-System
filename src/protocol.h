@@ -10,7 +10,7 @@
 // 主控机确定从控机的登陆请求不合法
 // int ret = LOG_IN_FAIL
 
-#define REPLY_CON -3;
+#define REPLY_CON -3
 // 主控机回复从控机是否送风
 // int ret = REPLY_CON
 // bool is_vaild ---是否送风
@@ -25,10 +25,10 @@
 // string user_id
 
 
-#define REPLY_STATE 3
+#define REPORT_STATE 3
 // 从控机回复状态，用于主控机监测房间状态
 // 只在开机状态下发送，如关机需要发送一个isOn = false的消息，告知主控机自己关机
-// int op = REPLY_STATE
+// int op = REPORT_STATE
 // bool is_on --- 是否开机
 // bool is_heat_mode ---工作模式
 // int set_temp --- the temperature user wants to get
