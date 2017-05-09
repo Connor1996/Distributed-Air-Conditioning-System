@@ -75,9 +75,18 @@ json Dispatcher::UpdateSettingHandle(json &requestInfo)
     _state.setTemperature = requestInfo["temp"].get<int>();
     _state.speed = requestInfo["speed"].get<int>();
 
+    bool isValid = false;
+    if (_parent->_setting.isPowerOn &&
+            _state.isHeatMode == _parent->_setting.isHeatMode) {
+        if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
+            isValid = true;
+        else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature)
+            isValid = true;
+    }
+    _state.isOn = isValid;
     json responseInfo = {
         {"ret", REPLY_CON},
-        {"is_valid", _state.isHeatMode == _parent->GetSetting().isHeatMode}
+        {"is_valid", isValid}
     };
 
     return responseInfo;
@@ -86,6 +95,8 @@ json Dispatcher::UpdateSettingHandle(json &requestInfo)
 json Dispatcher::StateHandle(json &requestInfo)
 {
     _state.realTemperature = requestInfo["real_temp"].get<int>();
+    _state.setTemperature = requestInfo["set_temp"].get<int>();
+    _state.speed = requestInfo["speed"].get<int>();
     json responseInfo = {
         {"ret", REPLY_MONEY},
         {"money", 0},

@@ -148,14 +148,26 @@ void Management::InitConnect() {
         ui->userIdEdit->clear();
     });
 
+    connect(ui->modeButton, &QPushButton::clicked, [this](){
+        if (ui->modeLabel->text() == "cold") {
+            _server->_setting.isHeatMode = true;
+            ui->modeLabel->setText("heat");
+        } else {
+            _server->_setting.isHeatMode = false;
+            ui->modeLabel->setText("cold");
+        }
+
+    });
+
     connect(ui->powerButton, &QPushButton::clicked, [this](){
+        _server->_setting.isPowerOn = !_server->_setting.isPowerOn;
         ui->tempNumber->setEnabled(!ui->tempNumber->isEnabled());
         ui->tempUpButton->setEnabled(!ui->tempUpButton->isEnabled());
         ui->tempDownButton->setEnabled(!ui->tempDownButton->isEnabled());
         ui->modeButton->setEnabled(!ui->modeButton->isEnabled());
 
         if (ui->tempNumber->isEnabled()) {
-            if (_updateThread)
+            if (_updateThread && _updateThread->joinable())
                 delete _updateThread;
 
             _updateThread = new std::thread([this](){
@@ -163,17 +175,29 @@ void Management::InitConnect() {
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                     if (!ui->tempNumber->isEnabled())
                         return;
-                    for (const auto& pair : _server->GetRoomMap()) {
-                        const auto& state = _server->GetRoomState(pair.first);
-                        _labels[pair.first].setTemp->display(state.setTemperature);
-                        _labels[pair.first].realTemp->display(state.realTemperature);
-                        if (state.isOn)
-                            _labels[pair.first].fanLabel->Start();
-                        else
-                            _labels[pair.first].fanLabel->Stop();
+                    for (const auto& roomId : _roomIds) {
+                        auto* state = _server->GetRoomState(roomId);
+                        if (state) {
+                            _labels[roomId].setTemp->display(state->setTemperature);
+                            _labels[roomId].realTemp->display(state->realTemperature);
+                            if (state->isOn && _server->_setting.isPowerOn)
+                                _labels[roomId].fanLabel->Start();
+                            else
+                                _labels[roomId].fanLabel->Stop();
+                        } else {
+                            _labels[roomId].setTemp->display(0);
+                            _labels[roomId].realTemp->display(0);
+                            _labels[roomId].fanLabel->Stop();
+                        }
                     }
                 }
             });
+        } else {
+            for (const auto& roomId : _roomIds) {
+                _labels[roomId].setTemp->display(0);
+                _labels[roomId].realTemp->display(0);
+                _labels[roomId].fanLabel->Stop();
+            }
         }
     });
 }

@@ -40,6 +40,7 @@ private:
 
     std::unordered_map<int, struct RoomLabels> _labels;
     std::list<int> _roomIds;
+
 };
 
 #endif // MANAGEMENT_H

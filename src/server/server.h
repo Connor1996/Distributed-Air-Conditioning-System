@@ -10,6 +10,7 @@
 class Dispatcher;
 
 struct Setting {
+    bool isPowerOn;
     bool isHeatMode;
     int setTemperature;
 };
@@ -35,12 +36,13 @@ public:
 
     bool CheckOut(int roomId);
 
-    const struct Setting& GetSetting() { return _setting; }
-    const struct State& GetRoomState(int roomId);
+    //const struct Setting& GetSetting() { return _setting; }
+    struct State* GetRoomState(int roomId);
     const std::unordered_map<int, Dispatcher*>& GetRoomMap() {
         return _dispatchers;
     }
 
+    Setting _setting;
 protected:
     // 监听客户端访问的socket
     SOCKET _listeningSocket;
@@ -58,7 +60,7 @@ protected:
 
     int _count;
 
-    Setting _setting;
+
 };
 
 }

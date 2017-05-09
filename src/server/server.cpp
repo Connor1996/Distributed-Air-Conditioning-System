@@ -7,7 +7,7 @@ using namespace Connor_Socket;
 using json = nlohmann::json;
 
 
-Server::Server() : _setting({false, 25}), _count(0)
+Server::Server() : _setting({false, false, 25}), _count(0)
 {
     _listeningSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (_listeningSocket == -1)
@@ -136,8 +136,11 @@ bool Server::CheckIn(int roomId, std::string userId) {
     return result.second;
 }
 
-const struct State& Server::GetRoomState(int roomId) {
-    return _dispatchers[roomId]->GetState();
+struct State* Server::GetRoomState(int roomId) {
+    if (_dispatchers.find(roomId) != _dispatchers.end())
+        return _dispatchers[roomId]->GetState();
+    else
+        return nullptr;
 }
 
 bool Server::CheckOut(int roomId) {

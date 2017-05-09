@@ -24,7 +24,7 @@ class Dispatcher
 {
 public:
 
-    Dispatcher() : _state({false, false, 0, 0}) { }
+    Dispatcher() : _state({false, false, 0, 0, 1}) { }
 
     // 传入SOCKET和Server的构造函数
     // @param:
@@ -50,9 +50,8 @@ public:
     void Logout();
 
     // 获取Dispatcher的内部状态
-    const struct State& GetState() { return _state; }
 private:
-    // 代表用户处于什么状态，如在线空闲或对战
+    // 代表用户处于什么状态
     struct State _state;
 
     // 与dispatcher绑定的socket连接

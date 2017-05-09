@@ -274,7 +274,15 @@
             <enum>QLayout::SetMinAndMaxSize</enum>
            </property>
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_12"/>
+            <layout class="QVBoxLayout" name="verticalLayout_12">
+             <item>
+              <widget class="QLabel" name="modeLabel">
+               <property name="text">
+                <string>cold</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QLCDNumber" name="tempNumber">
