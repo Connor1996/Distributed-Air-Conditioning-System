@@ -29,8 +29,8 @@
         }
 
         //设置发送时限
-        int nNetTimeout = 1000;
-        setsockopt(_connectSocket, SOL_SOCKET, SO_SNDTIMEO, (char *)&nNetTimeout, sizeof(int));
+        //int nNetTimeout = 1000;
+        //setsockopt(_connectSocket, SOL_SOCKET, SO_SNDTIMEO, (char *)&nNetTimeout, sizeof(int));
 
         cout << "Initial success" << endl;
     }
@@ -91,7 +91,7 @@
         if (send(_connectSocket, sendBuf, sendBufLen, 0) == SOCKET_ERROR)
         {
             closesocket(_connectSocket);
-            cout << "[ERROR] Failed at send message" << endl;
+            throw std::runtime_error("Failed at send message");
         }
         cout << "[INFO] send complete" << endl;
         // 等待接受服务器的返回信息
