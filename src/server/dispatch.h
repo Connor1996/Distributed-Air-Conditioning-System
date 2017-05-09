@@ -50,6 +50,7 @@ public:
     void Logout();
 
     // 获取Dispatcher的内部状态
+    struct State* GetState() { return &_state; }
 private:
     // 代表用户处于什么状态
     struct State _state;
