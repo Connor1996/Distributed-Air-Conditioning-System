@@ -23,7 +23,6 @@ public:
 private:
     void InitWidget();
     void InitConnect();
-    bool UpdateRequest();
     void DisableItems();
     void EnableItems();
     Ui::Panel *ui;
@@ -44,9 +43,9 @@ private slots:
     void ModeClicked();
     void SwitchClicked();
     void AdjustTemp();
-    void ReportState();
+    bool ReportState();
     void RecoverTemp();
-    void SendNow();
+    void ClusterSend();
 };
 
 #endif // PANEL_H

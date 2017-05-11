@@ -46,7 +46,7 @@ Panel::~Panel()
 }
 
 void Panel::InitWidget() {
-    ca.onoff = Switch::OFF;
+    ca.is_on = false;
     ca.is_heat_mode = false;
     ca.speed = Speed::NORMAL_SPEED;
     ca.expTemp = ca.temp = ca.original_temp = (int)TempRange::LOWER_BOUND +
@@ -69,22 +69,9 @@ void Panel::InitConnect() {
     QObject::connect(this->tempTimer, SIGNAL(timeout()), this, SLOT(AdjustTemp()));
     QObject::connect(this->notifyTimer, SIGNAL(timeout()), this, SLOT(ReportState()));
     QObject::connect(this->recoveryTimer, SIGNAL(timeout()), this, SLOT(RecoverTemp()));
-    QObject::connect(this->sendTimer, SIGNAL(timeout()), this, SLOT(SendNow()));
+    QObject::connect(this->sendTimer, SIGNAL(timeout()), this, SLOT(ClusterSend()));
 }
 
-bool Panel::UpdateRequest() {
-    json sendInfo = {
-        {"op", REQ_UPDATE},
-        {"is_heat_mode", ca.is_heat_mode},
-        {"temp", ca.expTemp},
-        {"speed", TempInc[(int)ca.speed]}
-    };
-    json recvInfo = json::parse(_client->Send(sendInfo.dump()));
-    std::cout << "ret = " << recvInfo["ret"] << std::endl;
-    if (recvInfo["ret"] == REPLY_CON)
-        return recvInfo["is_valid"].get<bool>();
-    return false;
-}
 
 void Panel::DisableItems() {
     ui->tempUp->setEnabled(false);
@@ -130,8 +117,8 @@ void Panel::Show(Connor_Socket::Client* c) {
 }
 
 void Panel::LogOutClicked() {
-    json sendInfo = {{"op", REQ_STOP}};
-    _client->Send(sendInfo.dump());
+    ca.is_on = false;
+    ReportState();
     delete tempTimer, notifyTimer, recoveryTimer;
     tempTimer = notifyTimer = recoveryTimer = NULL;
     this->close();
@@ -142,18 +129,8 @@ void Panel::TempUpClicked() {
     if (this->ca.expTemp != (int)TempRange::UPPER_BOUND) {
         ca.expTemp++;
         this->ui->expectedTemp->setText(QString::number(ca.expTemp) + " Centigrade");
-        //json sendInfo = {{"op", REQ_RESUME}};
-        //_client->Send(sendInfo.dump());
-
         if (!sendTimer->isActive())
             sendTimer->start(SEND_WAIT_PERIOD);
-
-//        if (!tempTimer->isActive() && UpdateRequest()) {
-//            std::cout << "temped up clicked and enabled" << std::endl;
-//            tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
-//            if (ui->working->text() != QString::fromWCharArray(L"送风中"))
-//                ui->working->setText(QString::fromWCharArray(L"送风中"));
-//        }
     }
 }
 
@@ -161,18 +138,8 @@ void Panel::TempDownClicked() {
     if (this->ca.expTemp != (int)TempRange::LOWER_BOUND) {
         ca.expTemp--;
         this->ui->expectedTemp->setText(QString::number(ca.expTemp) + " Centigrade");
-        //json sendInfo = {{"op", REQ_RESUME}};
-        //_client->Send(sendInfo.dump());
-
         if (!sendTimer->isActive())
             sendTimer->start(SEND_WAIT_PERIOD);
-
-//        if (!tempTimer->isActive() && UpdateRequest()) {
-//            std::cout << "temp down clicked and enabled" << std::endl;
-//            tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
-//            if (ui->working->text() != QString::fromWCharArray(L"送风中"))
-//                ui->working->setText(QString::fromWCharArray(L"送风中"));
-//        }
     }
 }
 
@@ -184,7 +151,7 @@ void Panel::WindUpClicked() {
             tempTimer->stop();
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         }
-        UpdateRequest();
+        ReportState();
     }
 }
 
@@ -196,30 +163,27 @@ void Panel::WindDownClicked() {
             tempTimer->stop();
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         }
-        UpdateRequest();
+        ReportState();
     }
 }
 
 void Panel::ModeClicked() {
     ca.is_heat_mode = !ca.is_heat_mode;
-    UpdateRequest();
     this->ui->mode->setText(QString::fromWCharArray(ca.is_heat_mode ? L"制热" : L"制冷"));
+    ReportState();
 }
 
 void Panel::SwitchClicked() {
-    if (ca.onoff == Switch::OFF) {
-        ca.onoff = Switch::ON;
+    if (!ca.is_on) {
+        ReportState();
+        ca.is_on = true;
         EnableItems();
-        json sendInfo = {{"op", REQ_RESUME}};
-        _client->Send(sendInfo.dump());
-        UpdateRequest();
     }
     else {
-        ca.onoff = Switch::OFF;
+        ReportState();
+        ca.is_on = false;
         ui->working->setText(QString::fromWCharArray(L"等待送风"));
         DisableItems();
-        json sendInfo = {{"op", REQ_STOP}};
-        _client->Send(sendInfo.dump());
         recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
     }
 }
@@ -237,29 +201,43 @@ void Panel::AdjustTemp() {
         if (tempTimer->isActive())
             tempTimer->stop();
         ui->working->setText(QString::fromWCharArray(L"等待送风"));
-        json sendInfo = {{"op", REQ_STOP}};
-        _client->Send(sendInfo.dump());
         recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
+        //温度达到预期，通知为“off”？
+        //ca.is_on = false;
+        //ReportState();
     }
 }
 
-void Panel::ReportState() {
+bool Panel::ReportState() {
     json sendInfo = {
         {"op", REPORT_STATE},
+        {"is_on", ca.is_on},
+        {"is_heat_mode", ca.is_heat_mode},
         {"set_temp", ca.expTemp},
         {"real_temp", ca.temp},
         {"speed", TempInc[(int)ca.speed]}
     };
-    _client->Send(sendInfo.dump());
+    json recvInfo = json::parse(_client->Send(sendInfo.dump()));
+    if (!recvInfo.empty() && recvInfo.find("ret") != recvInfo.end()
+            && recvInfo["ret"].get<int>() == REPLY_CON) {
+        if (recvInfo.find("power") != recvInfo.end())
+            ui->power->setText(QString::number(recvInfo["power"].get<double>()));
+        if (recvInfo.find("money") != recvInfo.end())
+            ui->cost->setText(QString::number(recvInfo["money"].get<double>()));
+        if (recvInfo.find("is_valid") != recvInfo.end())
+            return recvInfo["is_valid"].get<bool>();
+    }
+    return false;
 }
 
 void Panel::RecoverTemp() {
     //温度恢复到可以忍受的最大范围
-    if (ca.onoff == Switch::ON && abs(ca.expTemp - ca.temp) == TEMP_BEAR_RANGE) {
+    if (ca.is_on && abs(ca.expTemp - ca.temp) == TEMP_BEAR_RANGE) {
         recoveryTimer->stop();
         tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
-        json sendInfo = {{"op", REQ_RESUME}};
-        _client->Send(sendInfo.dump());
+        //温度变化达到最大范围，通知“on”？
+        //ca.is_on = true;
+        //ReportState();
     }
     else if (ca.temp == ca.original_temp) {
         recoveryTimer->stop();
@@ -276,12 +254,9 @@ void Panel::RecoverTemp() {
     }
 }
 
-void Panel::SendNow() {
-    json sendInfo = {{"op", REQ_RESUME}};
-    _client->Send(sendInfo.dump());
-    std::cout << "tempTimer.isActive = " << tempTimer->isActive() << std::endl;
-    if (UpdateRequest() && !tempTimer->isActive()) {
-        std::cout << "temp down clicked and enabled" << std::endl;
+void Panel::ClusterSend() {
+    ca.is_on = true; //温度达到预期停止送风，点击升/降温
+    if (ReportState() && !tempTimer->isActive()) {
         tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         if (ui->working->text() != QString::fromWCharArray(L"送风中"))
             ui->working->setText(QString::fromWCharArray(L"送风中"));
