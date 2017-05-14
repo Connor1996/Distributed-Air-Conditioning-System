@@ -23,7 +23,7 @@ public:
             int yoffset = (rotated.height() - _pic.height()) / 2;
             this->setPixmap(rotated.copy(xoffset, yoffset, _pic.width(), _pic.height()));
             if (_isActive)
-                _angle++;
+                _angle+=2;
         });
     }
 

@@ -277,6 +277,9 @@
             <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
               <widget class="QLabel" name="modeLabel">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="text">
                 <string>cold</string>
                </property>
