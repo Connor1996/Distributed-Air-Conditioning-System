@@ -43,7 +43,7 @@ private slots:
     void ModeClicked();
     void SwitchClicked();
     void AdjustTemp();
-    bool ReportState();
+    void ReportState();
     void RecoverTemp();
     void ClusterSend();
 };

@@ -47,9 +47,14 @@ void Widget::Cancel() {
 }
 
 void Widget::Show() {
-    delete _client;
-    _client = nullptr;
+    if (_client != nullptr) {
+        delete _client;
+        std::cout << "delete" << std::endl;
+        _client = nullptr;
+        std::cout << "nullptr" << std::endl;
+    }
     this->show();
+    std::cout << "show" << std::endl;
 }
 
 void Widget::Login()
@@ -84,11 +89,11 @@ void Widget::Login()
             QMessageBox::information(this, "info", "Room No. or ID incorrect");
         }
         else {
-            std::cout << "excute" << std::endl;
             this->close();
             this->ui->IDEdit->clear();
             this->ui->RoomEdit->clear();
             this->ui->RoomEdit->setFocus();
+            std::cout << "IDEdit = " << ui->IDEdit->text().toStdString() << " RoomEdit=" << ui->RoomEdit->text().toStdString() << std::endl;
             emit toPanel(_client);
         }
     }

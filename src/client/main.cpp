@@ -1,4 +1,5 @@
-﻿#include "widget.h"
+﻿
+#include "widget.h"
 #include "panel.h"
 #include <QApplication>
 
