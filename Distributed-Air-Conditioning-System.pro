@@ -28,7 +28,7 @@ HEADERS += \
         src/socket.h \
         src/protocol.h \
         src/include/json.hpp \
-    src/server/rotationlabel.h
+        src/server/rotationlabel.h
 
 UI_DIR = ./ui
 
@@ -62,7 +62,8 @@ Server{
         src/server/main.cpp \
         src/include/sqlite3.c \
         src/server/login.cpp \
-        src/server/management.cpp
+        src/server/management.cpp \
+        src/server/charge.cpp
 
     HEADERS += \
         src/server/dispatch.h \
@@ -71,14 +72,15 @@ Server{
         src/include/sqlite3.h \
         src/model/*.h \
         src/server/login.h \
-        src/server/management.h
+        src/server/management.h \
+        src/server/charge.h
 
     FORMS += \
         src/server/login.ui \
-        src/server/management.ui
+        src/server/management.ui \
+        src/server/charge.ui
 }
 
 RESOURCES += \
     image/image.qrc
 
-SOURCES +=

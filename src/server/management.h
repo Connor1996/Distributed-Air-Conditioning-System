@@ -2,6 +2,7 @@
 #define MANAGEMENT_H
 
 #include "server.h"
+#include "charge.h"
 
 #include <QWidget>
 #include <QLabel>
@@ -20,6 +21,12 @@ class Management : public QWidget
 
 public:
     explicit Management(QWidget *parent = 0);
+
+    QString room_id;
+    QString user_id;
+    QString total_time;
+    QString total_money;
+
     ~Management();
 
 private:
@@ -40,6 +47,8 @@ private:
 
     std::unordered_map<int, struct RoomLabels> _labels;
     std::list<int> _roomIds;
+
+    charge *cost;
 
 };
 

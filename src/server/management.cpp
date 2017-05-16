@@ -3,6 +3,7 @@
 
 #include "management.h"
 #include "ui_management.h"
+#include "charge.h"
 
 #include "src/include/json.hpp"
 #include "src/protocol.h"
@@ -142,7 +143,10 @@ void Management::InitConnect() {
             QMessageBox::information(this, "info", "this roomId is not checked in");
         else {
             _labels[roomId].picLabel->setPixmap(QPixmap(":/server/checkout"));
-            QMessageBox::information(this, "info", "check out successful");
+            //QMessageBox::information(this, "info", "check out successful");
+            room_id = QString::number(roomId,10);
+            cost = new charge(room_id,user_id,total_time,total_money);
+            cost->show();
         }
 
         ui->userIdEdit->clear();
