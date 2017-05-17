@@ -59,7 +59,6 @@ void Panel::InitWidget() {
 }
 
 void Panel::InitConnect() {
-    QObject::connect(ui->logOutButton, SIGNAL(clicked(bool)), this, SLOT(LogOutClicked()));
     QObject::connect(ui->tempUp, SIGNAL(clicked(bool)), this, SLOT(TempUpClicked()));
     QObject::connect(ui->tempDown, SIGNAL(clicked(bool)), this, SLOT(TempDownClicked()));
     QObject::connect(ui->windUp, SIGNAL(clicked(bool)), this, SLOT(WindUpClicked()));
@@ -79,7 +78,6 @@ void Panel::DisableItems() {
     ui->windUp->setEnabled(false);
     ui->windDown->setEnabled(false);
     ui->modeButton->setEnabled(false);
-    ui->logOutButton->setEnabled(true);
     ui->switchButton->setEnabled(true);
     if (tempTimer->isActive())
         tempTimer->stop();
@@ -113,20 +111,6 @@ void Panel::Show(Connor_Socket::Client* c) {
     InitWidget();
     InitConnect();
     this->show();
-}
-
-void Panel::LogOutClicked() {
-    ca.is_on = false;
-    if (tempTimer->isActive())
-        tempTimer->stop();
-    if (notifyTimer->isActive())
-        notifyTimer->stop();
-    if (recoveryTimer->isActive())
-        recoveryTimer->stop();
-    delete tempTimer, notifyTimer, recoveryTimer;
-    tempTimer = notifyTimer = recoveryTimer = NULL;
-    this->close();
-    emit toLogIn();
 }
 
 void Panel::TempUpClicked() {

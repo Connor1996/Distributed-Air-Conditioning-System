@@ -30,12 +30,8 @@ private:
     ConditionorAttr ca;
     QTimer* tempTimer, *notifyTimer, *recoveryTimer, *sendTimer;
 
-signals:
-    void toLogIn();
-
 private slots:
     void Show(Connor_Socket::Client* c);
-    void LogOutClicked();
     void TempUpClicked();
     void TempDownClicked();
     void WindUpClicked();

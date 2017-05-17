@@ -25,19 +25,6 @@
      <height>330</height>
     </rect>
    </property>
-   <widget class="QPushButton" name="logOutButton">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>300</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Log Out</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="tempUp">
     <property name="geometry">
      <rect>

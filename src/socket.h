@@ -25,7 +25,7 @@ namespace Connor_Socket
 #define SERVER_PORT 2222            // 服务器监听端口
 
 
-#define _REMOTE_
+//#define _REMOTE_
 #ifdef _REMOTE_
 #define CLIENT_ADDR "10.201.17.36"     // 客户端IP地址
 #define SERVER_ADDR "10.201.17.38"     // 服务器IP地址
