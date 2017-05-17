@@ -46,6 +46,10 @@ Panel::~Panel()
 }
 
 void Panel::InitWidget() {
+    clientRotationable = new RotationLabel(256, RotateRatio[1], this->ui->viewer);
+    clientRotationable->resize(256, 256);
+    int vwrWdth(ui->viewer->width()), vwrHght(ui->viewer->height()), lblWdth(clientRotationable->width()), lblHght(clientRotationable->height());
+    clientRotationable->setGeometry((vwrWdth - lblWdth) / 2, (vwrHght - lblHght) / 2, lblWdth, lblHght);
     ca.is_on = false;
     ca.is_heat_mode = false;
     ca.speed = Speed::NORMAL_SPEED;
@@ -73,6 +77,7 @@ void Panel::InitConnect() {
 
 
 void Panel::DisableItems() {
+    this->clientRotationable->Stop();
     ui->tempUp->setEnabled(false);
     ui->tempDown->setEnabled(false);
     ui->windUp->setEnabled(false);
@@ -97,12 +102,11 @@ void Panel::EnableItems() {
     ui->windDown->setEnabled(true);
     ui->modeButton->setEnabled(true);
     ui->working->setText(QString::fromWCharArray(L"等待送风"));
-    ui->windSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
+    ui->windSpeed->setText(QString::fromWCharArray(SpeedStr[(int)ca.speed].c_str()));
     ui->mode->setText(QString::fromWCharArray(L"制冷"));
-    QString t = QString::number(ca.temp) + " Centigrade";
-    ui->temperature->setText(t);
-    ui->expectedTemp->setText(t);
-    ui->originalTemp->setText(t);
+    ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
+    ui->expectedTemp->setText(QString::number(ca.expTemp) + QString::fromWCharArray(L" 度"));
+    ui->originalTemp->setText(QString::number(ca.original_temp) + QString::fromWCharArray(L" 度"));
     notifyTimer->start(NOTIFY_PERIOD);
 }
 
@@ -116,7 +120,7 @@ void Panel::Show(Connor_Socket::Client* c) {
 void Panel::TempUpClicked() {
     if (this->ca.expTemp != (int)TempRange::UPPER_BOUND) {
         ca.expTemp++;
-        this->ui->expectedTemp->setText(QString::number(ca.expTemp) + " Centigrade");
+        this->ui->expectedTemp->setText(QString::number(ca.expTemp) + QString::fromWCharArray(L" 度"));
         if (!sendTimer->isActive())
             sendTimer->start(SEND_WAIT_PERIOD);
     }
@@ -125,7 +129,7 @@ void Panel::TempUpClicked() {
 void Panel::TempDownClicked() {
     if (this->ca.expTemp != (int)TempRange::LOWER_BOUND) {
         ca.expTemp--;
-        this->ui->expectedTemp->setText(QString::number(ca.expTemp) + " Centigrade");
+        this->ui->expectedTemp->setText(QString::number(ca.expTemp) + QString::fromWCharArray(L" 度"));
         if (!sendTimer->isActive())
             sendTimer->start(SEND_WAIT_PERIOD);
     }
@@ -134,7 +138,8 @@ void Panel::TempDownClicked() {
 void Panel::WindUpClicked() {
     if (this->ca.speed != Speed::FAST_SPEED) {
         this->ca.speed = (Speed)(((int)this->ca.speed) + 1);
-        this->ui->windSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
+        this->ui->windSpeed->setText(QString::fromWCharArray(SpeedStr[(int)ca.speed].c_str()));
+        this->clientRotationable->AdjustRotateRatio(RotateRatio[(int)ca.speed]);
         if (tempTimer->isActive()) {
             tempTimer->stop();
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
@@ -146,7 +151,8 @@ void Panel::WindUpClicked() {
 void Panel::WindDownClicked() {
     if (this->ca.speed != Speed::SLOW_SPEED) {
         this->ca.speed = (Speed)(((int)this->ca.speed) - 1);
-        this->ui->windSpeed->setText(QString::fromStdString(SpeedStr[(int)ca.speed]));
+        this->ui->windSpeed->setText(QString::fromWCharArray(SpeedStr[(int)ca.speed].c_str()));
+        this->clientRotationable->AdjustRotateRatio(RotateRatio[(int)ca.speed]);
         if (tempTimer->isActive()) {
             tempTimer->stop();
             tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
@@ -179,16 +185,17 @@ void Panel::SwitchClicked() {
 void Panel::AdjustTemp() {
     if (ca.expTemp > ca.temp) {
         ca.temp = ca.temp + 1 > ca.expTemp ? ca.expTemp : ca.temp + 1;
-        this->ui->temperature->setText(QString::number(ca.temp) + " Centigrade");
+        this->ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
     }
     if (ca.expTemp < ca.temp) {
         ca.temp = ca.temp - 1 < ca.expTemp ? ca.expTemp : ca.temp - 1;
-        this->ui->temperature->setText(QString::number(ca.temp) + " Centigrade");
+        this->ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
     }
     if (ca.expTemp == ca.temp) {
         if (tempTimer->isActive())
             tempTimer->stop();
         ui->working->setText(QString::fromWCharArray(L"等待送风"));
+        this->clientRotationable->Stop();
         recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
     }
 }
@@ -206,16 +213,33 @@ void Panel::ReportState() {
     if (!recvInfo.empty() && recvInfo.find("ret") != recvInfo.end()
             && recvInfo["ret"].get<int>() == REPLY_CON) {
         if (recvInfo.find("power") != recvInfo.end())
-            ui->power->setText(QString::number(recvInfo["power"].get<double>()));
+            ui->power->setText(QString::number(recvInfo["power"].get<double>()) + QString::fromWCharArray(L" 瓦特"));
         if (recvInfo.find("money") != recvInfo.end())
-            ui->cost->setText(QString::number(recvInfo["money"].get<double>()));
+            ui->cost->setText(QString::number(recvInfo["money"].get<double>()) + QString::fromWCharArray(L" 元"));
         if (recvInfo.find("is_valid") != recvInfo.end()) {
             if (recvInfo["is_valid"].get<bool>()) {
                 if (!tempTimer->isActive()) {
                     tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
                     if (ui->working->text() != QString::fromWCharArray(L"送风中"))
-                    ui->working->setText(QString::fromWCharArray(L"送风中"));
+                        ui->working->setText(QString::fromWCharArray(L"送风中"));
                 }
+                if (!this->clientRotationable->isActive())
+                    this->clientRotationable->Start();
+                if (recoveryTimer->isActive()) {
+                    std::cout << "stop recovery timer" << std::endl;
+                    recoveryTimer->stop();
+                }
+            }
+            else {
+                if (tempTimer->isActive()) {
+                    tempTimer->stop();
+                    if (ui->working->text() != QString::fromWCharArray(L"等待送风"))
+                        ui->working->setText(QString::fromWCharArray(L"等待送风"));
+                }
+                if (this->clientRotationable->isActive())
+                    this->clientRotationable->Stop();
+                if (!recoveryTimer->isActive())
+                    recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
             }
         }
     }
@@ -224,21 +248,18 @@ void Panel::ReportState() {
 void Panel::RecoverTemp() {
     //温度恢复到可以忍受的最大范围
     if (ca.is_on && abs(ca.expTemp - ca.temp) == TEMP_BEAR_RANGE) {
-        recoveryTimer->stop();
-        tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
+        ReportState();
     }
-    else if (ca.temp == ca.original_temp) {
+    if (recoveryTimer->isActive() && ca.temp == ca.original_temp) {
         recoveryTimer->stop();
     }
-    else {
-        if (ca.temp < ca.original_temp) {
-            ca.temp = ca.temp + 1 > ca.original_temp ? ca.original_temp : ca.temp + 1;
-            this->ui->temperature->setText(QString::number(ca.temp) + " Centigrade");
-        }
-        if (ca.temp > ca.original_temp) {
-            ca.temp = ca.temp - 1 < ca.original_temp ? ca.original_temp : ca.temp - 1;
-            this->ui->temperature->setText(QString::number(ca.temp) + " Centigrade");
-        }
+    if (recoveryTimer->isActive() && ca.temp < ca.original_temp) {
+        ca.temp = ca.temp + 1 > ca.original_temp ? ca.original_temp : ca.temp + 1;
+        this->ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
+    }
+    if (recoveryTimer->isActive() && ca.temp > ca.original_temp) {
+        ca.temp = ca.temp - 1 < ca.original_temp ? ca.original_temp : ca.temp - 1;
+        this->ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
     }
 }
 

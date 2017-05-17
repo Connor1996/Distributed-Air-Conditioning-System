@@ -28,7 +28,7 @@ HEADERS += \
         src/socket.h \
         src/protocol.h \
         src/include/json.hpp \
-    src/server/rotationlabel.h
+        src/rotationlabel.h
 
 UI_DIR = ./ui
 
