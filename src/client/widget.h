@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "client.h"
+#include "panel.h"
 
 namespace Ui {
 class Widget;
@@ -21,7 +22,6 @@ private slots:
     // 登陆
     void Login();
     void Cancel();
-    void Show();
 
 signals:
     void toPanel(Connor_Socket::Client* c);

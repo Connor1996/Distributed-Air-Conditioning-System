@@ -9,7 +9,7 @@
 #include <QLCDNumber>
 
 #include <unordered_map>
-#include "rotationlabel.h"
+#include "src/rotationlabel.h"
 
 namespace Ui {
 class Management;

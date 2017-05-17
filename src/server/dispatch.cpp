@@ -62,7 +62,7 @@ json Dispatcher::StateHandle(json &requestInfo)
     _state.speed = requestInfo["speed"].get<int>();
 
     bool isValid = false;
-    if (_parent->_setting.isPowerOn && _state.isOn &&
+    if (_parent->_setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
             _state.isHeatMode == _parent->_setting.isHeatMode) {
         if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
             isValid = true;

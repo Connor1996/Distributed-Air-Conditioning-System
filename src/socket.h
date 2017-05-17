@@ -19,7 +19,7 @@
 namespace Connor_Socket
 {
 
-#define DEFAULT_BUFLEN 10000        // Socket传输缓冲区大小
+#define DEFAULT_BUFLEN 512        // Socket传输缓冲区大小
 
 #define CLIENT_PORT 5150            // 客户端连接端口
 #define SERVER_PORT 2222            // 服务器监听端口
@@ -28,7 +28,7 @@ namespace Connor_Socket
 //#define _REMOTE_
 #ifdef _REMOTE_
 #define CLIENT_ADDR "10.201.17.36"     // 客户端IP地址
-#define SERVER_ADDR "10.201.17.35"     // 服务器IP地址
+#define SERVER_ADDR "10.201.17.38"     // 服务器IP地址
 #else
 #define CLIENT_ADDR "127.0.0.1"     // 单机模式下都指向localhost
 #define SERVER_ADDR "127.0.0.1"

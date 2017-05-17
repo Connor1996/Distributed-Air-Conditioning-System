@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "client.h"
 #include "conditionorattr.h"
+#include "src/rotationlabel.h"
 
 const int NOTIFY_PERIOD = 1000;
 const int SEND_WAIT_PERIOD = 1000;
@@ -29,13 +30,10 @@ private:
     Connor_Socket::Client *_client;
     ConditionorAttr ca;
     QTimer* tempTimer, *notifyTimer, *recoveryTimer, *sendTimer;
-
-signals:
-    void toLogIn();
+    RotationLabel* clientRotationable;
 
 private slots:
     void Show(Connor_Socket::Client* c);
-    void LogOutClicked();
     void TempUpClicked();
     void TempDownClicked();
     void WindUpClicked();
@@ -43,7 +41,7 @@ private slots:
     void ModeClicked();
     void SwitchClicked();
     void AdjustTemp();
-    bool ReportState();
+    void ReportState();
     void RecoverTemp();
     void ClusterSend();
 };

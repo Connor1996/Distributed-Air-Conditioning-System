@@ -12,7 +12,8 @@ using json = nlohmann::json;
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Widget)
+    ui(new Ui::Widget),
+    _client(nullptr)
 {
     ui->setupUi(this);
     InitConnect();
@@ -35,10 +36,11 @@ void Widget::InitConnect()
 Widget::~Widget()
 {
     delete ui;
-    if (_client != nullptr) {
-        delete _client;
-        _client = nullptr;
-    }
+//    if (_client != nullptr) {
+//        delete _client;
+//        _client = nullptr;
+//    }
+    delete _client;
 }
 
 
@@ -46,11 +48,6 @@ void Widget::Cancel() {
     this->close();
 }
 
-void Widget::Show() {
-    delete _client;
-    _client = nullptr;
-    this->show();
-}
 
 void Widget::Login()
 {
@@ -84,11 +81,10 @@ void Widget::Login()
             QMessageBox::information(this, "info", "Room No. or ID incorrect");
         }
         else {
-            std::cout << "excute" << std::endl;
-            this->close();
             this->ui->IDEdit->clear();
             this->ui->RoomEdit->clear();
             this->ui->RoomEdit->setFocus();
+            this->close();
             emit toPanel(_client);
         }
     }

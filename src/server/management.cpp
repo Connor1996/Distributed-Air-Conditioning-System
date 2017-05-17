@@ -82,11 +82,13 @@ void Management::InitWidget() {
 
             RotationLabel *fanLabel = new RotationLabel();
             fanLabel->setAlignment(Qt::AlignCenter);
+            fanLabel->setEnabled(false);
 
             auto createLCDNumber = [](){
                 auto tmp = new QLCDNumber(2);
                 tmp->setFrameShape(QFrame::NoFrame);
                 tmp->setSegmentStyle(QLCDNumber::SegmentStyle::Flat);
+                tmp->setEnabled(false);
                 return tmp;
             };
 
@@ -163,6 +165,7 @@ void Management::InitConnect() {
 
     });
 
+
     connect(ui->powerButton, &QPushButton::clicked, [this](){
         _server->_setting.isPowerOn = !_server->_setting.isPowerOn;
         ui->tempNumber->setEnabled(!ui->tempNumber->isEnabled());
@@ -171,8 +174,10 @@ void Management::InitConnect() {
         ui->modeButton->setEnabled(!ui->modeButton->isEnabled());
 
         if (ui->tempNumber->isEnabled()) {
-            if (_updateThread)
+            if (_updateThread) {
+                 _updateThread->join();
                 delete _updateThread;
+            }
 
             _updateThread = new std::thread([this](){
                 while(true) {
@@ -182,6 +187,9 @@ void Management::InitConnect() {
                     for (const auto& roomId : _roomIds) {
                         auto* state = _server->GetRoomState(roomId);
                         if (state) {
+//                            _labels[roomId].setTemp->setEnabled(true);
+//                            _labels[roomId].realTemp->setEnabled(true);
+//                            _labels[roomId].fanLabel->setEnabled(true);
                             _labels[roomId].setTemp->display(state->setTemperature);
                             _labels[roomId].realTemp->display(state->realTemperature);
                             if (state->isOn && _server->_setting.isPowerOn)
@@ -189,6 +197,9 @@ void Management::InitConnect() {
                             else
                                 _labels[roomId].fanLabel->Stop();
                         } else {
+//                            _labels[roomId].setTemp->setEnabled(false);
+//                            _labels[roomId].realTemp->setEnabled(false);
+//                            _labels[roomId].fanLabel->setEnabled(false);
                             _labels[roomId].setTemp->display(0);
                             _labels[roomId].realTemp->display(0);
                             _labels[roomId].fanLabel->Stop();
@@ -198,6 +209,9 @@ void Management::InitConnect() {
             });
         } else {
             for (const auto& roomId : _roomIds) {
+//                _labels[roomId].setTemp->setEnabled(false);
+//                _labels[roomId].realTemp->setEnabled(false);
+//                _labels[roomId].fanLabel->setEnabled(false);
                 _labels[roomId].setTemp->display(0);
                 _labels[roomId].realTemp->display(0);
                 _labels[roomId].fanLabel->Stop();
