@@ -1,11 +1,12 @@
-#include "charge.h"
+﻿#include "charge.h"
 #include "ui_charge.h"
 
 #include<QMessageBox>
 
-charge::charge(QString room_id,QString user_id,QString total_time,QString total_money,QWidget *parent) :
+Charge::Charge(QString room_id, QString user_id, QString total_time,
+               QString total_money, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::charge)
+    ui(new Ui::Charge)
 {
     ui->setupUi(this);
     ui->room_id->setText(room_id);
@@ -14,12 +15,12 @@ charge::charge(QString room_id,QString user_id,QString total_time,QString total_
     ui->total_money->setText(total_money);
 }
 
-charge::~charge()
+Charge::~Charge()
 {
     delete ui;
 }
 
-void charge::on_make_sure_clicked()
+void Charge::on_make_sure_clicked()
 {
     QMessageBox::information(this, "info", "check out successful");
     this->close();

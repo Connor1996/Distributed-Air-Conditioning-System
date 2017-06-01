@@ -169,13 +169,15 @@ void Panel::ModeClicked() {
 
 void Panel::SwitchClicked() {
     if (!ca.is_on) {
-        ReportState();
         ca.is_on = true;
+        ReportState();
+
         EnableItems();
     }
     else {
-        ReportState();
         ca.is_on = false;
+        ReportState();
+
         ui->working->setText(QString::fromWCharArray(L"等待送风"));
         DisableItems();
         recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);

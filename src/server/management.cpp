@@ -38,6 +38,7 @@ Management::~Management()
     delete _server;
     delete _serverThread;
     delete _updateThread;
+    delete _charge;
 }
 
 #define DEFAULT_TEMP 18
@@ -146,9 +147,9 @@ void Management::InitConnect() {
         else {
             _labels[roomId].picLabel->setPixmap(QPixmap(":/server/checkout"));
             //QMessageBox::information(this, "info", "check out successful");
-            room_id = QString::number(roomId,10);
-            cost = new charge(room_id,user_id,total_time,total_money);
-            cost->show();
+
+            _charge = new Charge(room_id,user_id,total_time,total_money);
+            _charge->show();
         }
 
         ui->userIdEdit->clear();
