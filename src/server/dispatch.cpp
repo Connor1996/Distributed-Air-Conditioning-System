@@ -11,6 +11,7 @@
 using namespace ORMLite;
 using std::cout;
 #include <QMessageBox>
+
 std::string Dispatcher::Dispatch(json requestInfo)
 {
     json responseInfo;
@@ -50,7 +51,6 @@ json Dispatcher::LoginHandle(json &requestInfo)
         }
     }
 
-
     return responseInfo;
 }
 
@@ -62,6 +62,11 @@ json Dispatcher::StateHandle(json &requestInfo)
     _state.speed = requestInfo["speed"].get<int>();
 
     bool isValid = false;
+
+    // 从送风队列删除
+    if(!requestInfo["is_on"].get<bool>())
+        _parent->StopServe(this);
+
     if (_parent->_setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
             _state.isHeatMode == _parent->_setting.isHeatMode) {
         if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
@@ -69,6 +74,11 @@ json Dispatcher::StateHandle(json &requestInfo)
         else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature)
             isValid = true;
     }
+
+    // 判断送风队列是否空闲
+    if (isValid && !_parent->Serve(this))
+        isValid = false;
+
 
     _state.isOn = isValid;
     json responseInfo = {
@@ -80,6 +90,7 @@ json Dispatcher::StateHandle(json &requestInfo)
 
     return responseInfo;
 }
+
 
 void Dispatcher::Logout()
 {

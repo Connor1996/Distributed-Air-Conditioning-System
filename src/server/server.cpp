@@ -151,3 +151,32 @@ bool Server::CheckOut(int roomId) {
         return true;
     }
 }
+#define SERVE_NUMBER 3
+bool Server::Serve(Dispatcher *target) {
+    bool has = false;
+    int count = 0;
+    for (const auto& serving : _servingQueue) {
+        count++;
+        if (serving == target) {
+            has = true;
+            break;
+        }
+    }
+
+    if (has)
+        return count <= SERVE_NUMBER;
+    else {
+        _servingQueue.push_back(target);
+        return count + 1 <= SERVE_NUMBER;
+    }
+}
+
+
+void Server::StopServe(Dispatcher *target) {
+    for (auto iter = _servingQueue.begin(); iter != _servingQueue.end(); ) {
+        if (*iter == target)
+            iter = _servingQueue.erase(iter);
+        else
+            iter++;
+    }
+}
