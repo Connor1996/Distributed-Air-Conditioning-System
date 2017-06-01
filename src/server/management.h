@@ -36,7 +36,7 @@ private:
     Ui::Management *ui;
     Connor_Socket::Server *_server;
     std::thread *_serverThread;
-    std::thread *_updateThread;
+    QTimer *_updateTimer;
 
     struct RoomLabels {
         QLabel *picLabel;

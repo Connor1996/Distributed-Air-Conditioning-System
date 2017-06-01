@@ -64,23 +64,25 @@ json Dispatcher::StateHandle(json &requestInfo)
     bool isValid = false;
 
     // 从送风队列删除
-    if(!requestInfo["is_on"].get<bool>())
+    if(!requestInfo["is_on"].get<bool>()) {
         _parent->StopServe(this);
+        _state.isOn = false;
+    } else {
+        if (_parent->_setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
+                _state.isHeatMode == _parent->_setting.isHeatMode) {
+            if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
+                isValid = true;
+            else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature)
+                isValid = true;
+        }
 
-    if (_parent->_setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
-            _state.isHeatMode == _parent->_setting.isHeatMode) {
-        if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
-            isValid = true;
-        else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature)
-            isValid = true;
+        // 判断送风队列是否空闲
+        if (isValid && !_parent->Serve(this))
+            isValid = false;
+
+
+        _state.isOn = isValid;
     }
-
-    // 判断送风队列是否空闲
-    if (isValid && !_parent->Serve(this))
-        isValid = false;
-
-
-    _state.isOn = isValid;
     json responseInfo = {
         {"ret", REPLY_CON},
         {"is_valid", isValid},

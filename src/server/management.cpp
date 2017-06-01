@@ -24,12 +24,14 @@ Management::Management(QWidget *parent) :
         _server = new Server();
         _server->Start();
     })),
-    _updateThread(nullptr),
+    _updateTimer(new QTimer()),
     ui(new Ui::Management)
 {
-    ui->setupUi(this);
+    ui->setupUi(this); 
     InitWidget();
     InitConnect();
+    _updateTimer->start(500);
+
 }
 
 Management::~Management()
@@ -37,8 +39,9 @@ Management::~Management()
     delete ui;
     delete _server;
     delete _serverThread;
-    delete _updateThread;
+    delete _updateTimer;
     delete _charge;
+
 }
 
 #define DEFAULT_TEMP 18
@@ -53,6 +56,8 @@ void Management::InitWidget() {
     ui->tempDownButton->setEnabled(false);
     ui->modeButton->setEnabled(false);
 
+    ui->modeLabel->setPixmap(QPixmap(":/server/cold"));
+    ui->modeLabel->setEnabled(false);
 
     // 加载房间号
     for (const auto& roomId : _roomIds) {
@@ -148,6 +153,7 @@ void Management::InitConnect() {
             _labels[roomId].picLabel->setPixmap(QPixmap(":/server/checkout"));
             //QMessageBox::information(this, "info", "check out successful");
 
+            // 结账界面
             _charge = new Charge(room_id,user_id,total_time,total_money);
             _charge->show();
         }
@@ -156,12 +162,12 @@ void Management::InitConnect() {
     });
 
     connect(ui->modeButton, &QPushButton::clicked, [this](){
-        if (ui->modeLabel->text() == "cold") {
+        if (!_server->_setting.isHeatMode) {
             _server->_setting.isHeatMode = true;
-            ui->modeLabel->setText("heat");
+            ui->modeLabel->setPixmap(QPixmap(":/server/warm"));
         } else {
             _server->_setting.isHeatMode = false;
-            ui->modeLabel->setText("cold");
+            ui->modeLabel->setPixmap(QPixmap(":/server/cold"));
         }
 
     });
@@ -173,46 +179,26 @@ void Management::InitConnect() {
         ui->tempUpButton->setEnabled(!ui->tempUpButton->isEnabled());
         ui->tempDownButton->setEnabled(!ui->tempDownButton->isEnabled());
         ui->modeButton->setEnabled(!ui->modeButton->isEnabled());
+        ui->modeLabel->setEnabled(!ui->modeLabel->isEnabled());
+    });
 
-        if (ui->tempNumber->isEnabled()) {
-            if (_updateThread) {
-                 _updateThread->join();
-                delete _updateThread;
-            }
-
-            _updateThread = new std::thread([this](){
-                while(true) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-                    if (!ui->tempNumber->isEnabled())
-                        return;
-                    for (const auto& roomId : _roomIds) {
-                        auto* state = _server->GetRoomState(roomId);
-                        if (state) {
-//                            _labels[roomId].setTemp->setEnabled(true);
-//                            _labels[roomId].realTemp->setEnabled(true);
-//                            _labels[roomId].fanLabel->setEnabled(true);
-                            _labels[roomId].setTemp->display(state->setTemperature);
-                            _labels[roomId].realTemp->display(state->realTemperature);
-                            if (state->isOn && _server->_setting.isPowerOn)
-                                _labels[roomId].fanLabel->Start();
-                            else
-                                _labels[roomId].fanLabel->Stop();
-                        } else {
-//                            _labels[roomId].setTemp->setEnabled(false);
-//                            _labels[roomId].realTemp->setEnabled(false);
-//                            _labels[roomId].fanLabel->setEnabled(false);
-                            _labels[roomId].setTemp->display(0);
-                            _labels[roomId].realTemp->display(0);
-                            _labels[roomId].fanLabel->Stop();
-                        }
-                    }
-                }
-            });
-        } else {
-            for (const auto& roomId : _roomIds) {
-//                _labels[roomId].setTemp->setEnabled(false);
-//                _labels[roomId].realTemp->setEnabled(false);
-//                _labels[roomId].fanLabel->setEnabled(false);
+    connect(_updateTimer, &QTimer::timeout, [this](){
+        for (const auto& roomId : _roomIds) {
+            auto* state = _server->GetRoomState(roomId);
+            if (state) {
+                _labels[roomId].setTemp->setEnabled(true);
+                _labels[roomId].realTemp->setEnabled(true);
+                _labels[roomId].fanLabel->setEnabled(true);
+                _labels[roomId].setTemp->display(state->setTemperature);
+                _labels[roomId].realTemp->display(state->realTemperature);
+                if (state->isOn && _server->_setting.isPowerOn)
+                    _labels[roomId].fanLabel->Start();
+                else
+                    _labels[roomId].fanLabel->Stop();
+            } else {
+                _labels[roomId].setTemp->setEnabled(false);
+                _labels[roomId].realTemp->setEnabled(false);
+                _labels[roomId].fanLabel->setEnabled(false);
                 _labels[roomId].setTemp->display(0);
                 _labels[roomId].realTemp->display(0);
                 _labels[roomId].fanLabel->Stop();
