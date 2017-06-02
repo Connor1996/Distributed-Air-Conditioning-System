@@ -60,7 +60,9 @@ void Widget::Login()
         QMessageBox::information(this, "info", "ID not filled");
     }
     else {
-        _client = new Client(room);
+        std::string ipaddr = this->ui->ipLineEdit->text().toStdString();
+        int port = this->ui->portLineEdit->text().toInt();
+        _client = new Client(room, ipaddr, port);
         int room_id = atoi(room.c_str());
         json sendInfo = {
             {"op", LOG_IN_USER},

@@ -10,12 +10,12 @@ class Client : Socket{
 public:
     // 默认构造函数
     // 委托到带名字的构造函数，传参为UNKOWN
-    Client() : Client("UNKNOWN") { }
+    Client() : Client("UNKNOWN", SERVER_ADDR, SERVER_PORT) { }
 
     // 带名字的构造函数，表明与该socket绑定的用户名
     // @param:
     //      name 用户名
-    Client(string name);
+    Client(string name, string ipaddr, int port);
 
     ~Client();
 
@@ -50,6 +50,8 @@ protected:
     SOCKADDR_IN _serverAddr;
     // 用户名
     string _username;
+    string _ipaddr;
+    int _port;
 private:
     std::mutex mtx;
 };

@@ -3,8 +3,10 @@
 
     using namespace Connor_Socket;
 
-    Client::Client(string name)
-        : _username(name)
+    Client::Client(string name, string ipaddr, int port)
+        : _username(name),
+          _ipaddr(ipaddr),
+          _port(port)
     {
         std::cout << "begin..." << std::endl;
         _connectSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -14,9 +16,11 @@
         // 填写客户端地址信息
         // 使用inet_addr需要将IP地址转换为网络格式
         _serverAddr.sin_family = AF_INET;
-        _serverAddr.sin_port = htons(SERVER_PORT);
+        //_serverAddr.sin_port = htons(SERVER_PORT);
+        _serverAddr.sin_port = htons(_port);
         //_serverAddr.sin_addr.s_addr = inet_addr(CLIENT_ADDR);
-        auto res = inet_pton(AF_INET, SERVER_ADDR, &_serverAddr.sin_addr);
+        //auto res = inet_pton(AF_INET, SERVER_ADDR, &_serverAddr.sin_addr);
+        auto res = inet_pton(AF_INET, _ipaddr.c_str(), &_serverAddr.sin_addr);
         if (res < 0)
         {
             closesocket(_connectSocket);

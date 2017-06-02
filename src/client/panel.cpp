@@ -211,7 +211,17 @@ void Panel::ReportState() {
         {"real_temp", ca.temp},
         {"speed", TempInc[(int)ca.speed]}
     };
-    json recvInfo = json::parse(_client->Send(sendInfo.dump()));
+    json recvInfo;
+    try {
+        recvInfo= json::parse(_client->Send(sendInfo.dump()));
+    }
+    catch (std::exception e) {
+        delete _client;
+        _client = nullptr;
+        QMessageBox::information(this, "info", "Can not connect server");
+        return;
+    }
+
     if (!recvInfo.empty() && recvInfo.find("ret") != recvInfo.end()
             && recvInfo["ret"].get<int>() == REPLY_CON) {
         if (recvInfo.find("power") != recvInfo.end())
