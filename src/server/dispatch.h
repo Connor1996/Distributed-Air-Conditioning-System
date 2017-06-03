@@ -18,13 +18,14 @@ struct State {
     int setTemperature;
     int realTemperature;
     int speed;
+    double totalPower;
 };
 
 class Dispatcher
 {
 public:
 
-    Dispatcher() : _state({false, false, 0, 0, 1}) { }
+    Dispatcher() : _state({false, false, 0, 0, 1, 0}) { }
 
     // 传入SOCKET和Server的构造函数
     // @param:

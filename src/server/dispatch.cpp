@@ -46,6 +46,12 @@ json Dispatcher::LoginHandle(json &requestInfo)
             // 检查是否已经在线
             if (_parent->Online(roomId, this)) {
                 responseInfo["ret"] = LOG_IN_SUCC;
+                responseInfo["is_heat_mode"] = _parent->setting.isHeatMode;
+                if (_parent->setting.isHeatMode)
+                    responseInfo["default"] = 28;
+                else
+                    responseInfo["default"] = 22;
+
                 _roomId = roomId;
             }
         }
@@ -70,9 +76,11 @@ json Dispatcher::StateHandle(json &requestInfo)
     } else {
         if (_parent->setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
                 _state.isHeatMode == _parent->setting.isHeatMode) {
-            if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
+            if (_state.isHeatMode && _state.setTemperature > _state.realTemperature
+                    && _state.realTemperature <= _parent->setting.setTemperature)
                 isValid = true;
-            else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature)
+            else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature
+                     && _state.realTemperature >= _parent->setting.setTemperature)
                 isValid = true;
         }
 
@@ -83,11 +91,21 @@ json Dispatcher::StateHandle(json &requestInfo)
 
         _state.isOn = isValid;
     }
+
+    if (isValid) {
+        if (_state.speed == 1)
+            _state.totalPower += _parent->setting.frequence / 1000 * 0.8;
+        else if (_state.speed == 2)
+            _state.totalPower += _parent->setting.frequence / 1000 * 1.0;
+        else
+            _state.totalPower += _parent->setting.frequence / 1000 * 1.3;
+    }
     json responseInfo = {
         {"ret", REPLY_CON},
         {"is_valid", isValid},
-        {"money", 0},
-        {"power", 0},
+        {"money", _state.totalPower * 5},
+        {"power", _state.totalPower},
+        {"frequence", _parent->setting.frequence}
     };
 
     return responseInfo;

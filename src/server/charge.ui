@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
-    <height>243</height>
+    <width>420</width>
+    <height>264</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -268,8 +268,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="make_sure">
+         <property name="styleSheet">
+          <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#E6F8F5;background:#1ABC9C;}
+QPushButton:hover{color:#FFFFFF;background:#2EE1C1;}QPushButton:pressed{color:#A7EEE6;background:#16A086;}</string>
+         </property>
          <property name="text">
-          <string>确认</string>
+          <string> 确认 </string>
          </property>
         </widget>
        </item>

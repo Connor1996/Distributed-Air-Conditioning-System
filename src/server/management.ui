@@ -134,23 +134,8 @@ QComboBox::down-arrow {
 }</string>
                 </property>
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>-1</number>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>1231321</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>1312312</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>31231312</string>
-                 </property>
-                </item>
                </widget>
               </item>
              </layout>

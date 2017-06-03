@@ -164,9 +164,13 @@ void Management::InitConnect() {
     connect(ui->modeButton, &QPushButton::clicked, [this](){
         if (!_server->setting.isHeatMode) {
             _server->setting.isHeatMode = true;
+            _server->setting.setTemperature = 28;
+            ui->tempNumber->display(28);
             ui->modeLabel->setPixmap(QPixmap(":/server/warm"));
         } else {
             _server->setting.isHeatMode = false;
+            _server->setting.setTemperature = 22;
+            ui->tempNumber->display(22);
             ui->modeLabel->setPixmap(QPixmap(":/server/cold"));
         }
 
