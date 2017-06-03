@@ -84,7 +84,7 @@ QFrame{background-color: rgb(255, 255, 255);}</string>
              <number>30</number>
             </property>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0">
+             <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0">
               <property name="sizeConstraint">
                <enum>QLayout::SetMinAndMaxSize</enum>
               </property>
@@ -100,22 +100,6 @@ QFrame{background-color: rgb(255, 255, 255);}</string>
                  <string>房间号</string>
                 </property>
                </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Maximum</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
               </item>
               <item>
                <widget class="QComboBox" name="roomId">
@@ -149,6 +133,9 @@ QComboBox::down-arrow {
     image: url(:/misc/down_arrow_2);
 }</string>
                 </property>
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
                 <item>
                  <property name="text">
                   <string>1231321</string>
@@ -176,7 +163,7 @@ QComboBox::down-arrow {
               <item>
                <widget class="QLabel" name="label_2">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -185,30 +172,14 @@ QComboBox::down-arrow {
                  <enum>QFrame::NoFrame</enum>
                 </property>
                 <property name="text">
-                 <string>身份证号</string>
+                 <string>身份证</string>
                 </property>
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Maximum</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
                <widget class="QLineEdit" name="userIdEdit">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -235,7 +206,7 @@ QLineEdit:focus{border:2px solid #3498DB;}</string>
                  <enum>Qt::Horizontal</enum>
                 </property>
                 <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
+                 <enum>QSizePolicy::Maximum</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -248,11 +219,11 @@ QLineEdit:focus{border:2px solid #3498DB;}</string>
               <item>
                <widget class="QPushButton" name="configureButton">
                 <property name="styleSheet">
-                 <string notr="true">QPushButton{border-style:none;padding:10px;border-radius:5px;color:#E6F8F5;background:#1ABC9C;}
+                 <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#E6F8F5;background:#1ABC9C;}
 QPushButton:hover{color:#FFFFFF;background:#2EE1C1;}QPushButton:pressed{color:#A7EEE6;background:#16A086;}</string>
                 </property>
                 <property name="text">
-                 <string> 配置 </string>
+                 <string>  配置  </string>
                 </property>
                </widget>
               </item>
@@ -281,11 +252,11 @@ QPushButton:hover{color:#FFFFFF;background:#2EE1C1;}QPushButton:pressed{color:#A
                  </sizepolicy>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton{border-style:none;padding:10px;border-radius:5px;color:#FFFFFF;background:#3498DB;}
+                 <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#3498DB;}
 QPushButton:hover{color:#E5FEFF;background:#5DACE4;}QPushButton:pressed{color:#A0DAFB;background:#2483C7;}</string>
                 </property>
                 <property name="text">
-                 <string> 入住 </string>
+                 <string>  入住  </string>
                 </property>
                </widget>
               </item>
@@ -314,11 +285,11 @@ QPushButton:hover{color:#E5FEFF;background:#5DACE4;}QPushButton:pressed{color:#A
                  </sizepolicy>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton{border-style:none;padding:10px;border-radius:5px;color:#FFFFFF;background:#3498DB;}
+                 <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#3498DB;}
 QPushButton:hover{color:#E5FEFF;background:#5DACE4;}QPushButton:pressed{color:#A0DAFB;background:#2483C7;}</string>
                 </property>
                 <property name="text">
-                 <string> 退房 </string>
+                 <string>  退房  </string>
                 </property>
                </widget>
               </item>
@@ -441,7 +412,7 @@ background-color: rgb(255, 255, 255);
                </sizepolicy>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton{border-style:none;padding:10px;border-radius:5px;color:#FFFFFF;background:#E74C3C;}
+               <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#E74C3C;}
 QPushButton:hover{color:#FFF5E7;background:#EC7064;}QPushButton:pressed{color:#F5A996;background:#DC2D1A;}</string>
               </property>
               <property name="text">
@@ -458,7 +429,7 @@ QPushButton:hover{color:#FFF5E7;background:#EC7064;}QPushButton:pressed{color:#F
                </sizepolicy>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton{border-style:none;padding:10px;border-radius:5px;color:#FFFFFF;background:#34495E;}
+               <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#34495E;}
 QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B8C6D1;background:#2D3E50;}</string>
               </property>
               <property name="text">
@@ -475,7 +446,7 @@ QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B
                </sizepolicy>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton{border-style:none;padding:10px;border-radius:5px;color:#FFFFFF;background:#34495E;}
+               <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#34495E;}
 QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B8C6D1;background:#2D3E50;}</string>
               </property>
               <property name="text">
@@ -492,7 +463,7 @@ QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B
                </sizepolicy>
               </property>
               <property name="styleSheet">
-               <string notr="true">QPushButton{border-style:none;padding:10px;border-radius:5px;color:#FFFFFF;background:#34495E;}
+               <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#34495E;}
 QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B8C6D1;background:#2D3E50;}</string>
               </property>
               <property name="text">
