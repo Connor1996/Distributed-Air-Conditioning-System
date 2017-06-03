@@ -4,6 +4,7 @@
 #include "management.h"
 #include "ui_management.h"
 #include "charge.h"
+#include "configure.h"
 
 #include "src/include/json.hpp"
 #include "src/protocol.h"
@@ -151,10 +152,9 @@ void Management::InitConnect() {
             QMessageBox::information(this, "info", "this roomId is not checked in");
         else {
             _labels[roomId].picLabel->setPixmap(QPixmap(":/server/checkout"));
-            //QMessageBox::information(this, "info", "check out successful");
 
             // 结账界面
-            _charge = new Charge(room_id,user_id,total_time,total_money);
+            _charge = new Charge("roomId", "user_id", "0", "0");
             _charge->show();
         }
 
@@ -170,6 +170,11 @@ void Management::InitConnect() {
             ui->modeLabel->setPixmap(QPixmap(":/server/cold"));
         }
 
+    });
+
+    connect(ui->configureButton, &QPushButton::clicked, [this](){
+       Configure *config = new Configure();
+       config->show();
     });
 
 

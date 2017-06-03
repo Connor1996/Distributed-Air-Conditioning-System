@@ -22,11 +22,6 @@ class Management : public QWidget
 public:
     explicit Management(QWidget *parent = 0);
 
-    QString room_id;
-    QString user_id;
-    QString total_time;
-    QString total_money;
-
     ~Management();
 
 private:
