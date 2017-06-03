@@ -2,12 +2,14 @@
 #define PANEL_H
 
 #include <QWidget>
+#include <QVBoxLayout>
 #include "client.h"
 #include "conditionorattr.h"
 #include "src/rotationlabel.h"
 
 const int NOTIFY_PERIOD = 1000;
 const int SEND_WAIT_PERIOD = 1000;
+const int ROTAIONAL_SIZE = 156;
 
 namespace Ui {
 class Panel;
@@ -31,6 +33,7 @@ private:
     ConditionorAttr ca;
     QTimer* tempTimer, *notifyTimer, *recoveryTimer, *sendTimer;
     RotationLabel* clientRotationable;
+    QVBoxLayout* vwrVLayout;
 
 private slots:
     void Show(Connor_Socket::Client* c);

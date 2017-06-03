@@ -46,10 +46,12 @@ Panel::~Panel()
 }
 
 void Panel::InitWidget() {
-    clientRotationable = new RotationLabel(256, RotateRatio[1], this->ui->viewer);
-    clientRotationable->resize(256, 256);
-    int vwrWdth(ui->viewer->width()), vwrHght(ui->viewer->height()), lblWdth(clientRotationable->width()), lblHght(clientRotationable->height());
-    clientRotationable->setGeometry((vwrWdth - lblWdth) / 2, (vwrHght - lblHght) / 2, lblWdth, lblHght);
+    this->setWindowTitle(QString::fromWCharArray(L"从控机"));
+    this->setWindowIcon(QIcon(":/server/fan"));
+    vwrVLayout = new QVBoxLayout(ui->viewer);
+    clientRotationable = new RotationLabel(ROTAIONAL_SIZE, RotateRatio[1], NULL);
+    clientRotationable->resize(ROTAIONAL_SIZE, ROTAIONAL_SIZE);
+    vwrVLayout->addWidget(clientRotationable);
     ca.is_on = false;
     ca.is_heat_mode = false;
     ca.speed = Speed::NORMAL_SPEED;
@@ -101,7 +103,6 @@ void Panel::EnableItems() {
     ui->windUp->setEnabled(true);
     ui->windDown->setEnabled(true);
     ui->modeButton->setEnabled(true);
-    ui->working->setText(QString::fromWCharArray(L"等待送风"));
     ui->windSpeed->setText(QString::fromWCharArray(SpeedStr[(int)ca.speed].c_str()));
     ui->mode->setText(QString::fromWCharArray(L"制冷"));
     ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
@@ -171,14 +172,11 @@ void Panel::SwitchClicked() {
     if (!ca.is_on) {
         ca.is_on = true;
         ReportState();
-
         EnableItems();
     }
     else {
         ca.is_on = false;
         ReportState();
-
-        ui->working->setText(QString::fromWCharArray(L"等待送风"));
         DisableItems();
         recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
     }
@@ -196,7 +194,6 @@ void Panel::AdjustTemp() {
     if (ca.expTemp == ca.temp) {
         if (tempTimer->isActive())
             tempTimer->stop();
-        ui->working->setText(QString::fromWCharArray(L"等待送风"));
         this->clientRotationable->Stop();
         recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
     }
@@ -219,6 +216,8 @@ void Panel::ReportState() {
         delete _client;
         _client = nullptr;
         QMessageBox::information(this, "info", "Can not connect server");
+        DisableItems();
+        this->close();
         return;
     }
 
@@ -232,8 +231,6 @@ void Panel::ReportState() {
             if (recvInfo["is_valid"].get<bool>()) {
                 if (!tempTimer->isActive()) {
                     tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
-                    if (ui->working->text() != QString::fromWCharArray(L"送风中"))
-                        ui->working->setText(QString::fromWCharArray(L"送风中"));
                 }
                 if (!this->clientRotationable->isActive())
                     this->clientRotationable->Start();
@@ -245,8 +242,6 @@ void Panel::ReportState() {
             else {
                 if (tempTimer->isActive()) {
                     tempTimer->stop();
-                    if (ui->working->text() != QString::fromWCharArray(L"等待送风"))
-                        ui->working->setText(QString::fromWCharArray(L"等待送风"));
                 }
                 if (this->clientRotationable->isActive())
                     this->clientRotationable->Stop();

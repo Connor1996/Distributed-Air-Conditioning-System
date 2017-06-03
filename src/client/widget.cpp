@@ -60,8 +60,20 @@ void Widget::Login()
         QMessageBox::information(this, "info", "ID not filled");
     }
     else {
-        std::string ipaddr = this->ui->ipLineEdit->text().toStdString();
-        int port = this->ui->portLineEdit->text().toInt();
+        std::string ipaddr;
+        int port;
+        if (ui->ipLineEdit->text().isEmpty() && ui->portLineEdit->text().isEmpty()) {
+               ipaddr = DEFAULT_SERVER_IP;
+               port = DEFAULT_SERVER_PORT;
+        }
+        else if (ui->ipLineEdit->text().isEmpty() && !ui->portLineEdit->text().isEmpty()
+                 || !ui->ipLineEdit->text().isEmpty() && ui->portLineEdit->text().isEmpty()) {
+            QMessageBox::information(this, "info", "Specify server's ip and port OR use default");
+        }
+        else {
+            ipaddr = this->ui->ipLineEdit->text().toStdString();
+            port = this->ui->portLineEdit->text().toInt();
+        }
         _client = new Client(room, ipaddr, port);
         int room_id = atoi(room.c_str());
         json sendInfo = {
