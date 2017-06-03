@@ -7,7 +7,9 @@ using namespace Connor_Socket;
 using json = nlohmann::json;
 
 
-Server::Server() : _setting({false, false, 25}), _count(0)
+Server::Server()
+    : setting({false, false, 25, 1, 500}),
+      _count(0)
 {
     _listeningSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (_listeningSocket == -1)
@@ -151,7 +153,7 @@ bool Server::CheckOut(int roomId) {
         return true;
     }
 }
-#define SERVE_NUMBER 3
+
 bool Server::Serve(Dispatcher *target) {
     bool has = false;
     int count = 0;
@@ -164,10 +166,10 @@ bool Server::Serve(Dispatcher *target) {
     }
 
     if (has)
-        return count <= SERVE_NUMBER;
+        return count <= setting.maxServe;
     else {
         _servingQueue.push_back(target);
-        return count + 1 <= SERVE_NUMBER;
+        return count + 1 <= setting.maxServe;
     }
 }
 

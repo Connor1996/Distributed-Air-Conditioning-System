@@ -13,6 +13,8 @@ struct Setting {
     bool isPowerOn;
     bool isHeatMode;
     int setTemperature;
+    int maxServe;
+    int frequence;
 };
 
 namespace Connor_Socket {
@@ -46,7 +48,8 @@ public:
         return _dispatchers;
     }
 
-    Setting _setting;
+    Setting setting;
+
 protected:
     // 监听客户端访问的socket
     SOCKET _listeningSocket;

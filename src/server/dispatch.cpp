@@ -68,8 +68,8 @@ json Dispatcher::StateHandle(json &requestInfo)
         _parent->StopServe(this);
         _state.isOn = false;
     } else {
-        if (_parent->_setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
-                _state.isHeatMode == _parent->_setting.isHeatMode) {
+        if (_parent->setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
+                _state.isHeatMode == _parent->setting.isHeatMode) {
             if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
                 isValid = true;
             else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature)

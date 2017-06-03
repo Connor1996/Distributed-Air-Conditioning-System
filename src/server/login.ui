@@ -140,6 +140,12 @@
           </item>
           <item>
            <widget class="QLineEdit" name="usernameEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
               <family>微软雅黑</family>
@@ -150,6 +156,10 @@
             </property>
             <property name="autoFillBackground">
              <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLineEdit{border-style:none;padding:5px;border-radius:5px;border:2px solid #DCE4EC;}
+QLineEdit:focus{border:2px solid #3498DB;}</string>
             </property>
            </widget>
           </item>
@@ -193,6 +203,12 @@
           </item>
           <item>
            <widget class="QLineEdit" name="passwordEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
               <family>微软雅黑</family>
@@ -202,7 +218,8 @@
              <bool>false</bool>
             </property>
             <property name="styleSheet">
-             <string notr="true"/>
+             <string notr="true">QLineEdit{border-style:none;padding:5px;border-radius:5px;border:2px solid #DCE4EC;}
+QLineEdit:focus{border:2px solid #3498DB;}</string>
             </property>
             <property name="text">
              <string/>
@@ -257,10 +274,11 @@
              <enum>Qt::NoFocus</enum>
             </property>
             <property name="styleSheet">
-             <string notr="true"/>
+             <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#E74C3C;}
+QPushButton:hover{color:#FFF5E7;background:#EC7064;}QPushButton:pressed{color:#F5A996;background:#DC2D1A;}</string>
             </property>
             <property name="text">
-             <string>Cancel</string>
+             <string>取消</string>
             </property>
             <property name="flat">
              <bool>false</bool>
@@ -275,8 +293,12 @@
             <property name="focusPolicy">
              <enum>Qt::NoFocus</enum>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#E6F8F5;background:#1ABC9C;}
+QPushButton:hover{color:#FFFFFF;background:#2EE1C1;}QPushButton:pressed{color:#A7EEE6;background:#16A086;}</string>
+            </property>
             <property name="text">
-             <string>Log In</string>
+             <string>登陆</string>
             </property>
            </widget>
           </item>

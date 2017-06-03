@@ -162,11 +162,11 @@ void Management::InitConnect() {
     });
 
     connect(ui->modeButton, &QPushButton::clicked, [this](){
-        if (!_server->_setting.isHeatMode) {
-            _server->_setting.isHeatMode = true;
+        if (!_server->setting.isHeatMode) {
+            _server->setting.isHeatMode = true;
             ui->modeLabel->setPixmap(QPixmap(":/server/warm"));
         } else {
-            _server->_setting.isHeatMode = false;
+            _server->setting.isHeatMode = false;
             ui->modeLabel->setPixmap(QPixmap(":/server/cold"));
         }
 
@@ -174,12 +174,16 @@ void Management::InitConnect() {
 
     connect(ui->configureButton, &QPushButton::clicked, [this](){
        Configure *config = new Configure();
-       config->show();
+       connect(config, &Configure::change, [this](int maxServe, int frequence){
+           _server->setting.maxServe = maxServe;
+           _server->setting.frequence = frequence;
+       });
+       config->exec();
     });
 
 
     connect(ui->powerButton, &QPushButton::clicked, [this](){
-        _server->_setting.isPowerOn = !_server->_setting.isPowerOn;
+        _server->setting.isPowerOn = !_server->setting.isPowerOn;
         ui->tempNumber->setEnabled(!ui->tempNumber->isEnabled());
         ui->tempUpButton->setEnabled(!ui->tempUpButton->isEnabled());
         ui->tempDownButton->setEnabled(!ui->tempDownButton->isEnabled());
@@ -196,7 +200,7 @@ void Management::InitConnect() {
                 _labels[roomId].fanLabel->setEnabled(true);
                 _labels[roomId].setTemp->display(state->setTemperature);
                 _labels[roomId].realTemp->display(state->realTemperature);
-                if (state->isOn && _server->_setting.isPowerOn)
+                if (state->isOn && _server->setting.isPowerOn)
                     _labels[roomId].fanLabel->Start();
                 else
                     _labels[roomId].fanLabel->Stop();
