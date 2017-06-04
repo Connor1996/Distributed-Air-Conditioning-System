@@ -57,6 +57,7 @@ void Panel::InitWidget() {
     ca.speed = Speed::NORMAL_SPEED;
     ca.expTemp = ca.temp = ca.original_temp = (int)TempRange::LOWER_BOUND +
             Random((int)TempRange::UPPER_BOUND - (int)TempRange::LOWER_BOUND);
+    ca.ntfy_frequence = NOTIFY_PERIOD;
     tempTimer = new QTimer();
     notifyTimer = new QTimer();
     recoveryTimer = new QTimer();
@@ -108,7 +109,7 @@ void Panel::EnableItems() {
     ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
     ui->expectedTemp->setText(QString::number(ca.expTemp) + QString::fromWCharArray(L" 度"));
     ui->originalTemp->setText(QString::number(ca.original_temp) + QString::fromWCharArray(L" 度"));
-    notifyTimer->start(NOTIFY_PERIOD);
+    //notifyTimer->start(NOTIFY_PERIOD);
 }
 
 void Panel::Show(Connor_Socket::Client* c) {
@@ -227,6 +228,17 @@ void Panel::ReportState() {
             ui->power->setText(QString::number(recvInfo["power"].get<double>()) + QString::fromWCharArray(L" 瓦特"));
         if (recvInfo.find("money") != recvInfo.end())
             ui->cost->setText(QString::number(recvInfo["money"].get<double>()) + QString::fromWCharArray(L" 元"));
+        if (recvInfo.find("frequence") != recvInfo.end()) {
+            if (ca.is_on && !notifyTimer->isActive()) {
+                ca.ntfy_frequence = recvInfo["frequence"].get<int>();
+                notifyTimer->start(ca.ntfy_frequence);
+            }
+            if (notifyTimer->isActive() && ca.ntfy_frequence != recvInfo["frequence"].get<int>()) {
+                ca.ntfy_frequence = recvInfo["frequence"].get<int>();
+                notifyTimer->stop();
+                notifyTimer->start(ca.ntfy_frequence);
+            }
+        }
         if (recvInfo.find("is_valid") != recvInfo.end()) {
             if (recvInfo["is_valid"].get<bool>()) {
                 if (!tempTimer->isActive()) {

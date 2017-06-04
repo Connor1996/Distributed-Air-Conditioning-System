@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Panel</class>
  <widget class="QWidget" name="Panel">
@@ -16,17 +16,10 @@
   <property name="styleSheet">
    <string notr="true">font: 75 12pt &quot;等线&quot;;</string>
   </property>
-<<<<<<< HEAD
   <layout class="QVBoxLayout" name="verticalLayout_10">
    <item>
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_12">
-=======
-  <layout class="QHBoxLayout" name="horizontalLayout_12">
-   <item>
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_13">
->>>>>>> origin/master
+     <layout class="QHBoxLayout" name="horizontalLayout_14">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_11">
         <item>
@@ -301,9 +294,6 @@
                  </layout>
                 </item>
                 <item>
-<<<<<<< HEAD
-                 <layout class="QHBoxLayout" name="horizontalLayout_3"/>
-=======
                  <layout class="QHBoxLayout" name="horizontalLayout_3">
                   <item>
                    <widget class="QLabel" name="label_8">
@@ -333,7 +323,6 @@
                    </widget>
                   </item>
                  </layout>
->>>>>>> origin/master
                 </item>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -473,133 +462,124 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
-<<<<<<< HEAD
-            <property name="minimumSize">
-             <size>
-              <width>165</width>
-              <height>165</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <widget class="QWidget" name="layoutWidget">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>166</width>
-=======
-            <widget class="QWidget" name="layoutWidget">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>0</y>
-               <width>177</width>
->>>>>>> origin/master
-               <height>189</height>
-              </rect>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_6">
-              <item>
-               <spacer name="verticalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_4">
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_9">
-                  <item>
-                   <layout class="QVBoxLayout" name="verticalLayout_2">
-                    <item>
-                     <widget class="QPushButton" name="tempUp">
-                      <property name="text">
-                       <string>温度 +</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="tempDown">
-                      <property name="text">
-                       <string>温度 -</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QVBoxLayout" name="verticalLayout_3">
-                    <item>
-                     <widget class="QPushButton" name="windUp">
-<<<<<<< HEAD
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-=======
->>>>>>> origin/master
-                      <property name="text">
-                       <string>风速 +</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="windDown">
-                      <property name="text">
-                       <string>风速 -</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_10">
-                  <item>
-                   <widget class="QPushButton" name="modeButton">
-                    <property name="text">
-                     <string>模式</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="switchButton">
-                    <property name="text">
-                     <string>开关</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_4">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_9">
+                   <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_2">
+                     <item>
+                      <widget class="QPushButton" name="tempUp">
+                       <property name="styleSheet">
+                        <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#34495E;}
+QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B8C6D1;background:#2D3E50;}</string>
+                       </property>
+                       <property name="text">
+                        <string>温度 +</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="tempDown">
+                       <property name="styleSheet">
+                        <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#34495E;}
+QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B8C6D1;background:#2D3E50;}</string>
+                       </property>
+                       <property name="text">
+                        <string>温度 -</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_3">
+                     <item>
+                      <widget class="QPushButton" name="windUp">
+                       <property name="styleSheet">
+                        <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#34495E;}
+QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B8C6D1;background:#2D3E50;}</string>
+                       </property>
+                       <property name="text">
+                        <string>风速 +</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="windDown">
+                       <property name="styleSheet">
+                        <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#34495E;}
+QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B8C6D1;background:#2D3E50;}</string>
+                       </property>
+                       <property name="text">
+                        <string>风速 -</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_10">
+                   <item>
+                    <widget class="QPushButton" name="modeButton">
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#34495E;}
+QPushButton:hover{color:#F0F0F0;background:#4E6D8C;}QPushButton:pressed{color:#B8C6D1;background:#2D3E50;}</string>
+                     </property>
+                     <property name="text">
+                      <string>模式</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="switchButton">
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#E74C3C;}
+QPushButton:hover{color:#FFF5E7;background:#EC7064;}QPushButton:pressed{color:#F5A996;background:#DC2D1A;}</string>
+                     </property>
+                     <property name="text">
+                      <string>开关</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>

@@ -16,6 +16,7 @@ typedef struct conditionorAttr {
     int temp;
     int expTemp;
     int original_temp;
+    int ntfy_frequence;
 } ConditionorAttr;
 
 #endif // CONDITIONORATTR_H

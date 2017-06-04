@@ -45,8 +45,12 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color : rgba(100, 100, 100, 100);
-border-radius : 20px;</string>
+    <string notr="true">#widget_2
+{
+	background-color: rgba(0,0,0, 40%);
+	border-radius:20px;
+}
+</string>
    </property>
    <widget class="QFrame" name="verticalFrame">
     <property name="geometry">
@@ -61,12 +65,7 @@ border-radius : 20px;</string>
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="styleSheet">
-     <string notr="true">#verticalFrame
-{
-	background-color: rgba(0,0,0, 20);
-	border-radius:10px;
-}
-</string>
+     <string notr="true"/>
     </property>
     <property name="frameShadow">
      <enum>QFrame::Plain</enum>
@@ -98,8 +97,7 @@ border-radius : 20px;</string>
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color : rgba(255, 255, 255, 10);
-font: 75 12pt &quot;Consolas&quot;;
+          <string notr="true">font: 75 12pt &quot;Consolas&quot;;
 color : white;</string>
          </property>
          <property name="text">
@@ -129,7 +127,7 @@ color : white;</string>
           <font>
            <family>Consolas</family>
            <pointsize>12</pointsize>
-           <weight>9</weight>
+           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -141,9 +139,8 @@ color : white;</string>
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color : rgba(255, 255, 255, 10);
-color : white;
-font: 75 12pt &quot;Consolas&quot;;</string>
+          <string notr="true">QLineEdit{border-style:none;padding:5px;border-radius:5px;border:2px solid #DCE4EC;}
+QLineEdit:focus{border:2px solid #3498DB;}</string>
          </property>
         </widget>
        </item>
@@ -164,8 +161,7 @@ font: 75 12pt &quot;Consolas&quot;;</string>
          </property>
          <property name="styleSheet">
           <string notr="true">font: 75 12pt &quot;Consolas&quot;;
-color : white;
-background-color : rgba(255, 255, 255, 10);</string>
+color : white;</string>
          </property>
          <property name="text">
           <string>ID   </string>
@@ -194,7 +190,7 @@ background-color : rgba(255, 255, 255, 10);</string>
           <font>
            <family>Consolas</family>
            <pointsize>12</pointsize>
-           <weight>9</weight>
+           <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
@@ -203,9 +199,8 @@ background-color : rgba(255, 255, 255, 10);</string>
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color : rgba(255, 255, 255, 10);
-color : white;
-font: 75 12pt &quot;Consolas&quot;;</string>
+          <string notr="true">QLineEdit{border-style:none;padding:5px;border-radius:5px;border:2px solid #DCE4EC;}
+QLineEdit:focus{border:2px solid #3498DB;}</string>
          </property>
          <property name="text">
           <string/>
@@ -260,9 +255,8 @@ font: 75 12pt &quot;Consolas&quot;;</string>
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="styleSheet">
-          <string notr="true">font: 75 12pt &quot;Consolas&quot;;
-color : rgba(0, 0, 0, 175);
-background-color : rgba(255, 255, 255, 10);</string>
+          <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#FFFFFF;background:#E74C3C;}
+QPushButton:hover{color:#FFF5E7;background:#EC7064;}QPushButton:pressed{color:#F5A996;background:#DC2D1A;}</string>
          </property>
          <property name="text">
           <string>Cancel</string>
@@ -281,9 +275,8 @@ background-color : rgba(255, 255, 255, 10);</string>
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="styleSheet">
-          <string notr="true">font: 75 12pt &quot;Consolas&quot;;
-color : rgba(0, 0, 0, 175);
-background-color : rgba(255, 255, 255, 10);</string>
+          <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#E6F8F5;background:#1ABC9C;}
+QPushButton:hover{color:#FFFFFF;background:#2EE1C1;}QPushButton:pressed{color:#A7EEE6;background:#16A086;}</string>
          </property>
          <property name="text">
           <string>Log In</string>
@@ -298,14 +291,13 @@ background-color : rgba(255, 255, 255, 10);</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>0</y>
       <width>228</width>
-      <height>71</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgba(0,0,0, 20);
-border-radius:10px;</string>
+     <string notr="true">border-radius:10px;</string>
     </property>
     <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
@@ -313,7 +305,7 @@ border-radius:10px;</string>
        <x>10</x>
        <y>10</y>
        <width>198</width>
-       <height>54</height>
+       <height>72</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -323,8 +315,7 @@ border-radius:10px;</string>
          <widget class="QLabel" name="label_3">
           <property name="styleSheet">
            <string notr="true">font: 75 12pt &quot;Consolas&quot;;
-color: rgb(255, 255, 255);
-background-color : rgba(255, 255, 255, 0);</string>
+color: rgb(255, 255, 255);</string>
           </property>
           <property name="text">
            <string>IP  </string>
@@ -347,9 +338,8 @@ background-color : rgba(255, 255, 255, 0);</string>
         <item>
          <widget class="QLineEdit" name="ipLineEdit">
           <property name="styleSheet">
-           <string notr="true">font: 75 12pt &quot;Consolas&quot;;
-color: rgb(255, 255, 255);
-background-color : rgba(255, 255, 255, 10);</string>
+           <string notr="true">QLineEdit{border-style:none;padding:5px;border-radius:5px;border:2px solid #DCE4EC;}
+QLineEdit:focus{border:2px solid #3498DB;}</string>
           </property>
          </widget>
         </item>
@@ -361,8 +351,7 @@ background-color : rgba(255, 255, 255, 10);</string>
          <widget class="QLabel" name="label_4">
           <property name="styleSheet">
            <string notr="true">font: 75 12pt &quot;Consolas&quot;;
-color: rgb(255, 255, 255);
-background-color : rgba(255, 255, 255, 0);</string>
+color: rgb(255, 255, 255);</string>
           </property>
           <property name="text">
            <string>Port</string>
@@ -385,9 +374,8 @@ background-color : rgba(255, 255, 255, 0);</string>
         <item>
          <widget class="QLineEdit" name="portLineEdit">
           <property name="styleSheet">
-           <string notr="true">font: 75 12pt &quot;Consolas&quot;;
-color: rgb(255, 255, 255);
-background-color : rgba(255, 255, 255, 10);</string>
+           <string notr="true">QLineEdit{border-style:none;padding:5px;border-radius:5px;border:2px solid #DCE4EC;}
+QLineEdit:focus{border:2px solid #3498DB;}</string>
           </property>
          </widget>
         </item>
