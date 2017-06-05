@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1238</width>
-    <height>322</height>
+    <width>958</width>
+    <height>640</height>
    </rect>
   </property>
   <property name="baseSize">
@@ -33,7 +33,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">#Widget{background-image: url(:/server/background);}</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_4">
    <item>

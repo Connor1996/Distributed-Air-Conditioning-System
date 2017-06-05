@@ -20,9 +20,9 @@ Widget::Widget(QWidget *parent) :
     InitConnect();
     setWindowFlags(Qt::WindowCloseButtonHint); //只要关闭按钮
 
-    setFixedSize(1024, 605);
+    //setFixedSize(960, 640);
     // 设置背景
-    setAutoFillBackground(true);
+    //setAutoFillBackground(true);
 }
 
 void Widget::InitConnect()

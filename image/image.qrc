@@ -5,5 +5,6 @@
         <file alias="fan">fan.png</file>
         <file alias="cold">cold.png</file>
         <file alias="warm">warm.png</file>
+        <file alias="background">the-blurred-819384_960_720.jpg</file>
     </qresource>
 </RCC>

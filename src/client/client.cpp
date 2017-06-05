@@ -52,7 +52,7 @@
 
     std::string Client::Connect(std::string requestInfo)
     {
-        auto trys = 2;
+        auto trys = 1;
         auto success = false;
 
         // 多次尝试

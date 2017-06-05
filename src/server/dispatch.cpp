@@ -47,10 +47,7 @@ json Dispatcher::LoginHandle(json &requestInfo)
             if (_parent->Online(roomId, this)) {
                 responseInfo["ret"] = LOG_IN_SUCC;
                 responseInfo["is_heat_mode"] = _parent->setting.isHeatMode;
-                if (_parent->setting.isHeatMode)
-                    responseInfo["default"] = 28;
-                else
-                    responseInfo["default"] = 22;
+                responseInfo["default"] = _parent->setting.setTemperature;
 
                 _roomId = roomId;
             }
@@ -76,11 +73,9 @@ json Dispatcher::StateHandle(json &requestInfo)
     } else {
         if (_parent->setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
                 _state.isHeatMode == _parent->setting.isHeatMode) {
-            if (_state.isHeatMode && _state.setTemperature > _state.realTemperature
-                    && _state.realTemperature <= _parent->setting.setTemperature)
+            if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
                 isValid = true;
-            else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature
-                     && _state.realTemperature >= _parent->setting.setTemperature)
+            else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature)
                 isValid = true;
         }
 

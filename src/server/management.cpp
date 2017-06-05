@@ -45,7 +45,7 @@ Management::~Management()
 
 }
 
-#define DEFAULT_TEMP 18
+#define DEFAULT_TEMP 22
 #define ROW 2
 #define COL 4
 void Management::InitWidget() {
@@ -59,6 +59,7 @@ void Management::InitWidget() {
 
     ui->modeLabel->setPixmap(QPixmap(":/server/cold"));
     ui->modeLabel->setEnabled(false);
+
 
     // 加载房间号
     for (const auto& roomId : _roomIds) {
@@ -120,11 +121,17 @@ void Management::InitWidget() {
 #define MAX_TEMP 30
 void Management::InitConnect() {
     connect(ui->tempDownButton, &QPushButton::clicked, [this](){
-        ui->tempNumber->display(max(MIN_TEMP, ui->tempNumber->intValue() - 1));
+        if(_server->setting.isHeatMode)
+            ui->tempNumber->display(max(30, ui->tempNumber->intValue() - 1));
+        else
+            ui->tempNumber->display(max(25, ui->tempNumber->intValue() - 1));
     });
 
     connect(ui->tempUpButton, &QPushButton::clicked, [this](){
-        ui->tempNumber->display(min(MAX_TEMP, ui->tempNumber->intValue() + 1));
+        if(_server->setting.isHeatMode)
+            ui->tempNumber->display(min(25, ui->tempNumber->intValue() + 1));
+        else
+            ui->tempNumber->display(min(18, ui->tempNumber->intValue() + 1));
     });
 
     connect(ui->checkInButton, &QPushButton::clicked, [this](){
