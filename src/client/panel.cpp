@@ -55,8 +55,8 @@ void Panel::InitWidget() {
     ca.is_on = false;
     ca.is_heat_mode = false;
     ca.speed = Speed::NORMAL_SPEED;
-    ca.expTemp = ca.temp = ca.original_temp = (int)TempRange::LOWER_BOUND +
-            Random((int)TempRange::UPPER_BOUND - (int)TempRange::LOWER_BOUND);
+    ca.expTemp = ca.temp = ca.original_temp = ca.is_heat_mode ?  (int)HeatRange::LOWER_BOUND + Random((int)HeatRange::UPPER_BOUND - (int)HeatRange::LOWER_BOUND)
+              : (int)ColdRange::LOWER_BOUND + Random((int)ColdRange::UPPER_BOUND - (int)ColdRange::LOWER_BOUND);
     ca.ntfy_frequence = NOTIFY_PERIOD;
     tempTimer = new QTimer();
     notifyTimer = new QTimer();
@@ -120,7 +120,8 @@ void Panel::Show(Connor_Socket::Client* c) {
 }
 
 void Panel::TempUpClicked() {
-    if (this->ca.expTemp != (int)TempRange::UPPER_BOUND) {
+    int upper_bound = ca.is_heat_mode ? (int)HeatRange::UPPER_BOUND : (int)ColdRange::UPPER_BOUND;
+    if (this->ca.expTemp != upper_bound) {
         ca.expTemp++;
         this->ui->expectedTemp->setText(QString::number(ca.expTemp) + QString::fromWCharArray(L" 度"));
         if (!sendTimer->isActive())
@@ -129,7 +130,8 @@ void Panel::TempUpClicked() {
 }
 
 void Panel::TempDownClicked() {
-    if (this->ca.expTemp != (int)TempRange::LOWER_BOUND) {
+    int lower_bound = ca.is_heat_mode ? (int)HeatRange::LOWER_BOUND : (int)ColdRange::LOWER_BOUND;
+    if (this->ca.expTemp != lower_bound) {
         ca.expTemp--;
         this->ui->expectedTemp->setText(QString::number(ca.expTemp) + QString::fromWCharArray(L" 度"));
         if (!sendTimer->isActive())

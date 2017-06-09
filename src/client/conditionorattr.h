@@ -1,8 +1,15 @@
 ﻿#ifndef CONDITIONORATTR_H
 #define CONDITIONORATTR_H
 
-enum TempRange {LOWER_BOUND = 16, UPPER_BOUND = 30};
-enum Speed {SLOW_SPEED = 0, NORMAL_SPEED = 1, FAST_SPEED = 2};
+namespace HeatRange {
+    const int UPPER_BOUND = 30;
+    const int LOWER_BOUND = 18;
+}
+namespace ColdRange {
+    const int UPPER_BOUND = 28;
+    const int LOWER_BOUND = 16;
+}
+enum Speed { SLOW_SPEED = 0, NORMAL_SPEED = 1, FAST_SPEED = 2 };
 const int TempInc[3] = {1, 2, 3}; //每秒变化的温度
 const std::wstring SpeedStr[3] = {L"慢", L"正常", L"快"};
 const int RotateRatio[3] = {1, 4, 7};
