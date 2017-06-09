@@ -2,6 +2,7 @@
 #include "ormlite.h"
 
 #include "../protocol.h"
+#include "../model/roomrequest.h"
 
 #include <stdexcept>
 #include <algorithm>

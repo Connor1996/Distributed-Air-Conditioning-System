@@ -161,6 +161,9 @@ void Management::InitConnect() {
             _labels[roomId].picLabel->setPixmap(QPixmap(":/server/checkout"));
 
             // 结账界面
+            _charge = new Charge(ui->roomId->currentText(), "",
+                                 QString::number(_server->GetRoomPower(roomId)),
+                                 QString::number(_server->GetRoomMoney(roomId)));
             _charge->show();
         }
 

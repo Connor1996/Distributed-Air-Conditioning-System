@@ -31,6 +31,7 @@ HEADERS += \
         src/rotationlabel.h \
         src/server/configure.h \
     src/model/roominfo.h \
+    src/model/roomrequest.h
 
 UI_DIR = ./ui
 
