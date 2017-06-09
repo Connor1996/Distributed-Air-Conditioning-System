@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <unordered_set>
+#include <ctime>
 
 using namespace ORMLite;
 using std::cout;
@@ -59,6 +60,13 @@ json Dispatcher::LoginHandle(json &requestInfo)
 
 json Dispatcher::StateHandle(json &requestInfo)
 {
+    static bool preValid = false;
+    static time_t beginTime;
+    static int beginSpeed;
+    static int beginTemp;
+    static int beginPower;
+
+
     _state.isHeatMode = requestInfo["is_heat_mode"].get<bool>();
     _state.realTemperature = requestInfo["real_temp"].get<int>();
     _state.setTemperature = requestInfo["set_temp"].get<int>();
@@ -70,6 +78,7 @@ json Dispatcher::StateHandle(json &requestInfo)
     if(!requestInfo["is_on"].get<bool>()) {
         _parent->StopServe(this);
         _state.isOn = false;
+        _record.count++;
     } else {
         if (_parent->setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
                 _state.isHeatMode == _parent->setting.isHeatMode) {
@@ -95,6 +104,21 @@ json Dispatcher::StateHandle(json &requestInfo)
         else
             _state.totalPower += _parent->setting.frequence / 1000 * 1.3;
     }
+
+    if (preValid == false && isValid == true) {
+        beginTime = time(nullptr);
+        beginSpeed = _state.speed;
+        beginTemp = _state.realTemperature;
+        beginPower = _state.totalPower;
+    } else if (preValid == true && isValid == false) {
+        _record.requests.push_back(Request{
+                                       beginTime, time(nullptr),
+                                       beginTemp, _state.realTemperature,
+                                       beginSpeed, _state.speed,
+                                       (_state.totalPower - beginPower) * 5
+                                   });
+    }
+
     json responseInfo = {
         {"ret", REPLY_CON},
         {"is_valid", isValid},

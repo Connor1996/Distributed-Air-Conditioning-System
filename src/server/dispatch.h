@@ -21,11 +21,29 @@ struct State {
     double totalPower;
 };
 
+struct Request {
+    time_t beginTime;
+    time_t stopTime;
+    int beginTemp;
+    int stopTemp;
+    int beginSpeed;
+    int stopSpeed;
+    double money;
+};
+
+struct Record {
+    int count;      // 开关机次数
+    std::vector<struct Request> requests;
+};
+
 class Dispatcher
 {
 public:
 
-    Dispatcher() : _state({false, false, 0, 0, 1, 0}) { }
+    Dispatcher()
+        : _state({false, false, 0, 0, 1, 0}),
+          _record({0, std::vector<struct Request>{}})
+    { }
 
     // 传入SOCKET和Server的构造函数
     // @param:
@@ -54,6 +72,9 @@ public:
 private:
     // 代表用户处于什么状态
     struct State _state;
+
+    // 用于保存报表内容
+    struct Record _record;
 
     // 与dispatcher绑定的socket连接
     SOCKET _connection;
