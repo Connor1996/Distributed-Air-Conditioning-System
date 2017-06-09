@@ -6,9 +6,60 @@
 using namespace Connor_Socket;
 using json = nlohmann::json;
 
+#include "src/model/roominfo.h"
+#include "src/model/roomrequest.h"
+#include "dispatch.h"
+#include "ormlite.h"
+
+using namespace ORMLite;
+#define DATABASE_NAME "data"
 
 Server::Server()
     : setting({false, false, 25, 1, 500}),
+      _persistThread(new std::thread([this](){
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+
+        ORMapper<RoomInfo> mapper(DATABASE_NAME);
+        RoomInfo helper;
+        QueryMessager<RoomInfo> messager(helper);
+
+        ORMapper<RoomRequest> requestMapper(DATABASE_NAME);
+
+        for (const auto& pair : _dispatchers) {
+            int roomId = pair.first;
+            auto record = pair.second->GetRecord();
+
+            // 查询用户背包信息
+            auto result = mapper.Query(messager
+                                      .Where(Field(helper.room_id) == roomId));
+
+            if (result) {
+                helper.count += record.count;
+                if(mapper.Update(helper))
+                    // 清除记录数
+                    record.count -= helper.count;
+            }
+
+            while(record.requests.size()) {
+                struct Request request = record.requests.front();
+                RoomRequest info = {
+                    roomId,
+                    request.beginTime,
+                    request.stopTime,
+                    request.beginTemp,
+                    request.stopTemp,
+                    request.beginSpeed,
+                    request.stopSpeed,
+                    request.money
+                };
+
+                if(!requestMapper.Insert(info))
+                    break;
+                record.requests.pop_front();
+            }
+
+        }
+      })),
       _count(0)
 {
     _listeningSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -139,6 +190,7 @@ bool Server::CheckIn(int roomId, std::string userId) {
 }
 
 struct State* Server::GetRoomState(int roomId) {
+
     if (_dispatchers.find(roomId) != _dispatchers.end())
         return _dispatchers[roomId]->GetState();
     else
@@ -182,3 +234,18 @@ void Server::StopServe(Dispatcher *target) {
             iter++;
     }
 }
+
+
+double Server::GetRoomMoney(int roomId) {
+    if (_dispatchers.find(roomId) != _dispatchers.end())
+        return _dispatchers[roomId]->GetMoney();
+    else return 0;
+}
+
+double Server::GetRoomPower(int roomId) {
+    if (_dispatchers.find(roomId) != _dispatchers.end())
+        return _dispatchers[roomId]->GetPower();
+    else
+        return 0;
+}
+

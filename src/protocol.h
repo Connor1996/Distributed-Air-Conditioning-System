@@ -33,7 +33,6 @@
 // 只在开机状态下发送，如关机需要发送一个isOn = false的消息，告知主控机自己关机
 // int op = REPORT_STATE
 // bool is_on --- 是否开机
-//
 // bool is_heat_mode ---工作模式
 // int set_temp --- the temperature user wants to get
 // int real_temp --- the actual temperature in user's room

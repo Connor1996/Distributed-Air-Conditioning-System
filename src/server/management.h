@@ -29,6 +29,8 @@ private:
     void InitConnect();
 
     Ui::Management *ui;
+
+    // server socket对象
     Connor_Socket::Server *_server;
     std::thread *_serverThread;
     QTimer *_updateTimer;

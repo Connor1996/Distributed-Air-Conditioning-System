@@ -2,8 +2,8 @@
 #define DISPATCH_H
 
 #include "server.h"
-#include "../socket.h"
-#include "../include/json.hpp"
+#include "src/socket.h"
+#include "src/include/json.hpp"
 
 using json = nlohmann::json;
 
@@ -33,7 +33,7 @@ struct Request {
 
 struct Record {
     int count;      // 开关机次数
-    std::vector<struct Request> requests;
+    std::list<struct Request> requests;
 };
 
 class Dispatcher
@@ -42,7 +42,7 @@ public:
 
     Dispatcher()
         : _state({false, false, 0, 0, 1, 0}),
-          _record({0, std::vector<struct Request>{}})
+          _record({0, std::list<struct Request>{}})
     { }
 
     // 传入SOCKET和Server的构造函数
@@ -69,6 +69,12 @@ public:
 
     // 获取Dispatcher的内部状态
     struct State* GetState() { return &_state; }
+    struct Record& GetRecord() { return _record; }
+
+    double GetPower() const { return _state.totalPower; }
+    double GetMoney() const { return _state.totalPower * 5; }
+
+
 private:
     // 代表用户处于什么状态
     struct State _state;

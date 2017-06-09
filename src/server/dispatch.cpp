@@ -2,7 +2,6 @@
 #include "ormlite.h"
 
 #include "../protocol.h"
-#include "../model/userinfo.h"
 
 #include <stdexcept>
 #include <algorithm>

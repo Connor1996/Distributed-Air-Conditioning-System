@@ -44,6 +44,9 @@ public:
 
     //const struct Setting& GetSetting() { return _setting; }
     struct State* GetRoomState(int roomId);
+    double GetRoomMoney(int roomId);// { return _dispatchers[roomId]->GetMoney(); }
+    double GetRoomPower(int roomId);// { return _dispatchers[roomId]->GetPower(); }
+
     const std::unordered_map<int, Dispatcher*>& GetRoomMap() {
         return _dispatchers;
     }
@@ -56,6 +59,9 @@ protected:
 
     // 地址信息
     SOCKADDR_IN _serverAddr;
+
+    // 定期持久化线程
+    std::thread *_persistThread;
 
     // 持有与各个客户端保持通信的线程
     std::vector<std::thread> _socketThreads;
