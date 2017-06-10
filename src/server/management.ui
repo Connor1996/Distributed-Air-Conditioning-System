@@ -185,6 +185,17 @@ QLineEdit:focus{border:2px solid #3498DB;}</string>
                <enum>QLayout::SetMinAndMaxSize</enum>
               </property>
               <item>
+               <widget class="QPushButton" name="reportButton">
+                <property name="styleSheet">
+                 <string notr="true">QPushButton{border-style:none;padding:7px;border-radius:5px;color:#E6F8F5;background:#1ABC9C;}
+QPushButton:hover{color:#FFFFFF;background:#2EE1C1;}QPushButton:pressed{color:#A7EEE6;background:#16A086;}</string>
+                </property>
+                <property name="text">
+                 <string>  报表  </string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_8">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>

@@ -1,6 +1,7 @@
 ﻿#ifndef SOCKET_H
 #define SOCKET_H
 
+#define NOMINMAX
 //#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <WS2tcpip.h>

@@ -5,6 +5,7 @@
 #include "ui_management.h"
 #include "charge.h"
 #include "configure.h"
+#include "form.h"
 
 #include "src/include/json.hpp"
 #include "src/protocol.h"
@@ -122,16 +123,16 @@ void Management::InitWidget() {
 void Management::InitConnect() {
     connect(ui->tempDownButton, &QPushButton::clicked, [this](){
         if(_server->setting.isHeatMode)
-            ui->tempNumber->display(max(30, ui->tempNumber->intValue() - 1));
+            ui->tempNumber->display(std::max(30, ui->tempNumber->intValue() - 1));
         else
-            ui->tempNumber->display(max(25, ui->tempNumber->intValue() - 1));
+            ui->tempNumber->display(std::max(25, ui->tempNumber->intValue() - 1));
     });
 
     connect(ui->tempUpButton, &QPushButton::clicked, [this](){
         if(_server->setting.isHeatMode)
-            ui->tempNumber->display(min(25, ui->tempNumber->intValue() + 1));
+            ui->tempNumber->display(std::min(25, ui->tempNumber->intValue() + 1));
         else
-            ui->tempNumber->display(min(18, ui->tempNumber->intValue() + 1));
+            ui->tempNumber->display(std::min(18, ui->tempNumber->intValue() + 1));
     });
 
     connect(ui->checkInButton, &QPushButton::clicked, [this](){
@@ -165,10 +166,10 @@ void Management::InitConnect() {
             _labels[roomId].picLabel->setPixmap(QPixmap(":/server/checkout"));
 
             // 结账界面
-            _charge = new Charge(ui->roomId->currentText(), "",
+            Charge charge(ui->roomId->currentText(), "",
                                  QString::number(power),
                                  QString::number(money));
-            _charge->show();
+            charge.exec();
         }
 
         ui->userIdEdit->clear();
@@ -197,6 +198,7 @@ void Management::InitConnect() {
            _server->setting.frequence = frequence;
        });
        config->exec();
+       delete config;
     });
 
 
@@ -232,6 +234,11 @@ void Management::InitConnect() {
                 _labels[roomId].fanLabel->Stop();
             }
         }
+    });
+
+    connect(ui->reportButton, &QPushButton::clicked, [this](){
+        Form *form = new Form();
+        form->show();
     });
 }
 

@@ -1,7 +1,7 @@
 ﻿#ifndef CHARGE_H
 #define CHARGE_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QMessageBox>
 #include "ui_charge.h"
 
@@ -9,14 +9,14 @@ namespace Ui {
 class Charge;
 }
 
-class Charge : public QWidget
+class Charge : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit Charge(QString room_id, QString user_id,
-                    QString total_time, QString total_money, QWidget *parent = 0) :
-        QWidget(parent),
+                    QString total_time, QString total_money, QDialog *parent = 0) :
+        QDialog(parent),
         ui(new Ui::Charge)
     {
         ui->setupUi(this);

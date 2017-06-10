@@ -12,6 +12,7 @@ Client {
 
 Server {
     QT       += core gui
+    QT += charts
     CONFIG += c++14
 }
 
@@ -31,8 +32,8 @@ HEADERS += \
         src/rotationlabel.h \
         src/server/configure.h \
         src/model/roominfo.h \
-        src/model/roomrequest.h \
-        src/server/request.h
+        src/model/roomrequest.h
+
 
 UI_DIR = ./ui
 
@@ -66,7 +67,9 @@ Server{
         src/server/main.cpp \
         src/include/sqlite3.c \
         src/server/login.cpp \
-        src/server/management.cpp
+        src/server/management.cpp \
+        src/server/form.cpp
+
 
     HEADERS += \
         src/server/dispatch.h \
@@ -75,19 +78,21 @@ Server{
         src/include/sqlite3.h \
         src/server/login.h \
         src/server/management.h \
-        src/server/charge.h
+        src/server/charge.h \
+        src/server/request.h \
+        src/server/form.h
 
     FORMS += \
         src/server/login.ui \
         src/server/management.ui \
-        src/server/charge.ui
+        src/server/charge.ui \
+        src/server/configure.ui \
+        src/server/form.ui
 }
 
 RESOURCES += \
     image/image.qrc
 
-SOURCES +=
 
-FORMS += \
-    src/server/configure.ui
+
 
