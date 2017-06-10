@@ -5,7 +5,9 @@
 #include <set>
 
 #include "dispatch.h"
-#include "../socket.h"
+#include "src/socket.h"
+#include "request.h"
+
 // 前置声明解决相互包含
 class Dispatcher;
 
@@ -17,21 +19,6 @@ struct Setting {
     int frequence;
 };
 
-struct Request {
-    time_t beginTime;
-    time_t stopTime;
-    int beginTemp;
-    int stopTemp;
-    int beginSpeed;
-    int stopSpeed;
-    double money;
-};
-
-struct Record {
-    int count;      // 开关机次数
-    double totalPower;
-    std::list<struct Request> requests;
-};
 
 namespace Connor_Socket {
 
@@ -65,6 +52,9 @@ public:
 
     // 持久化房间记录
     bool PersistRoomRecord(int);
+
+    std::vector<Request> GetRoomRequests(int);
+    int GetRoomCount(int);
 
     Setting setting;
 

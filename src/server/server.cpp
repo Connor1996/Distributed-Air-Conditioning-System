@@ -116,6 +116,45 @@ bool Server::PersistRoomRecord(int roomId) {
     return true;
 }
 
+std::vector<struct Request> Server::GetRoomRequests(int roomId) {
+    ORMapper<RoomRequest> requestMapper(DATABASE_NAME);
+    RoomRequest helper;
+    QueryMessager<RoomRequest> messager(helper);
+
+    auto result = requestMapper.Query(messager
+                                    .Where(Field(helper.room_id) == roomId));
+
+    std::vector<struct Request> ret;
+    if (result) {
+        for (const auto& request : messager.GetVector()) {
+            ret.emplace_back(Request{
+                                 std::stoi(request[1]),
+                                 std::stoi(request[2]),
+                                 std::stoi(request[3]),
+                                 std::stoi(request[4]),
+                                 std::stoi(request[5]),
+                                 std::stoi(request[6]),
+                                 std::stod(request[7])
+                          });
+        }
+    }
+
+    return ret;
+}
+
+int Server::GetRoomCount(int roomId) {
+    ORMapper<RoomInfo> mapper(DATABASE_NAME);
+    RoomInfo helper;
+    QueryMessager<RoomInfo> messager(helper);
+
+    auto result = mapper.Query(messager
+                                    .Where(Field(helper.room_id) == roomId));
+    if (result)
+        return std::stoi(messager.GetVector()[0][1]);
+    else
+        return 0;
+}
+
 void Server::Start()
 {
 

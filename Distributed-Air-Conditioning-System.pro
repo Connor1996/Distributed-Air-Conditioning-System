@@ -30,8 +30,9 @@ HEADERS += \
         src/include/json.hpp \
         src/rotationlabel.h \
         src/server/configure.h \
-    src/model/roominfo.h \
-    src/model/roomrequest.h
+        src/model/roominfo.h \
+        src/model/roomrequest.h \
+        src/server/request.h
 
 UI_DIR = ./ui
 
