@@ -51,6 +51,8 @@ public:
         return _dispatchers;
     }
 
+    bool PersistRoomRecord(int);
+
     Setting setting;
 
 protected:

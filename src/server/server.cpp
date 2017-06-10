@@ -19,46 +19,10 @@ Server::Server()
       _persistThread(new std::thread([this](){
         std::this_thread::sleep_for(std::chrono::seconds(10));
 
-        ORMapper<RoomInfo> mapper(DATABASE_NAME);
-        RoomInfo helper;
-        QueryMessager<RoomInfo> messager(helper);
-
-        ORMapper<RoomRequest> requestMapper(DATABASE_NAME);
-
         for (const auto& pair : _dispatchers) {
-            int roomId = pair.first;
-            auto record = pair.second->GetRecord();
-
-            // 查询用户背包信息
-            auto result = mapper.Query(messager
-                                      .Where(Field(helper.room_id) == roomId));
-
-            if (result) {
-                helper.count += record.count;
-                if(mapper.Update(helper))
-                    // 清除记录数
-                    record.count -= helper.count;
-            }
-
-            while(record.requests.size()) {
-                struct Request request = record.requests.front();
-                RoomRequest info = {
-                    roomId,
-                    request.beginTime,
-                    request.stopTime,
-                    request.beginTemp,
-                    request.stopTemp,
-                    request.beginSpeed,
-                    request.stopSpeed,
-                    request.money
-                };
-
-                if(!requestMapper.Insert(info))
-                    break;
-                record.requests.pop_front();
-            }
-
+            PersistRoomRecord(pair.first);
         }
+
       })),
       _count(0)
 {
@@ -93,6 +57,51 @@ Server::~Server()
     shutdown(_listeningSocket, SD_BOTH);
     closesocket(_listeningSocket);
     std::cout << "Server is closed" << std::endl;
+}
+
+bool Server::PersistRoomRecord(int roomId) {
+
+    static ORMapper<RoomInfo> mapper(DATABASE_NAME);
+    RoomInfo helper;
+    QueryMessager<RoomInfo> messager(helper);
+
+
+    auto record = _dispatchers[roomId]->GetRecord();
+
+    // 查询用户背包信息
+    auto result = mapper.Query(messager
+                              .Where(Field(helper.room_id) == roomId));
+
+    if (result) {
+        helper.count += record.count;
+        if(mapper.Update(helper))
+            // 清除记录数
+            record.count -= helper.count;
+    } else
+        return false;
+
+    while(record.requests.size()) {
+        static ORMapper<RoomRequest> requestMapper(DATABASE_NAME);
+
+        struct Request request = record.requests.front();
+        RoomRequest info = {
+            roomId,
+            request.beginTime,
+            request.stopTime,
+            request.beginTemp,
+            request.stopTemp,
+            request.beginSpeed,
+            request.stopSpeed,
+            request.money
+        };
+
+        if(!requestMapper.Insert(info))
+            return false;
+        record.requests.pop_front();
+    }
+    std::cout << "[INFO] record " << roomId  << " successful" << std::endl;
+
+    return true;
 }
 
 void Server::Start()
@@ -239,7 +248,8 @@ void Server::StopServe(Dispatcher *target) {
 double Server::GetRoomMoney(int roomId) {
     if (_dispatchers.find(roomId) != _dispatchers.end())
         return _dispatchers[roomId]->GetMoney();
-    else return 0;
+    else
+        return 0;
 }
 
 double Server::GetRoomPower(int roomId) {

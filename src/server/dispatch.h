@@ -40,18 +40,17 @@ class Dispatcher
 {
 public:
 
-    Dispatcher()
-        : _state({false, false, 0, 0, 1, 0}),
-          _record({0, std::list<struct Request>{}})
-    { }
-
     // 传入SOCKET和Server的构造函数
     // @param:
     //      connection  与相应客户端建立的socket连接
     //      parent      server对象指针
     Dispatcher(SOCKET &connection, Connor_Socket::Server *parent)
-        : _connection(connection), _parent(parent), _state({false, false, 0, 0})
+        : _connection(connection), _parent(parent),
+          _state({false, false, 0, 0, 1, 0}),
+          _record({0, std::list<struct Request>{}})
     { }
+
+    ~Dispatcher();
 
     // 根据请求信息，分发到相应的函数处理请求
     // @param:

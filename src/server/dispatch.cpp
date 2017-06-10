@@ -13,6 +13,12 @@ using namespace ORMLite;
 using std::cout;
 #include <QMessageBox>
 
+Dispatcher::~Dispatcher() {
+    if (!_parent->PersistRoomRecord(_roomId))
+        std::cout << "[ERROR] lose some records of " << _roomId << std::endl;
+}
+
+
 std::string Dispatcher::Dispatch(json requestInfo)
 {
     json responseInfo;
@@ -31,6 +37,8 @@ std::string Dispatcher::Dispatch(json requestInfo)
 
     return std::move(responseInfo.dump());
 }
+
+
 
 json Dispatcher::LoginHandle(json &requestInfo)
 {

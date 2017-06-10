@@ -588,7 +588,9 @@ public:
     ORMapper(const std::string& dbName)
         : _dbName(dbName), _tableName(T::_CLASSNAME),
           _fieldsName(_Split(T::_FIELDSNAME))
-    { }
+    {
+        CreateTable();
+    }
 
     bool CreateTable()
     {
