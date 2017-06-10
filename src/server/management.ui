@@ -112,7 +112,6 @@ QFrame{background-color: rgb(255, 255, 255);}</string>
                 <property name="styleSheet">
                  <string notr="true">QComboBox{border-style:none;padding:5px;border-radius:5px; color:#FFFFFF;background:#3498DB;
 selection-background-color: #3498DB;
-selection-border-radius: 5px;
 }
 
 QComboBox:hover, QPushButton:hover

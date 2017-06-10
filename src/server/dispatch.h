@@ -21,20 +21,6 @@ struct State {
     double totalPower;
 };
 
-struct Request {
-    time_t beginTime;
-    time_t stopTime;
-    int beginTemp;
-    int stopTemp;
-    int beginSpeed;
-    int stopSpeed;
-    double money;
-};
-
-struct Record {
-    int count;      // 开关机次数
-    std::list<struct Request> requests;
-};
 
 class Dispatcher
 {
@@ -46,8 +32,7 @@ public:
     //      parent      server对象指针
     Dispatcher(SOCKET &connection, Connor_Socket::Server *parent)
         : _connection(connection), _parent(parent),
-          _state({false, false, 0, 0, 1, 0}),
-          _record({0, std::list<struct Request>{}})
+          _state({false, false, 0, 0, 1, 0})
     { }
 
     ~Dispatcher();
@@ -63,23 +48,16 @@ public:
     json LoginHandle(json&);
     json StateHandle(json&);
 
-    // 与该Dispatch绑定用户登出
-    void Logout();
-
     // 获取Dispatcher的内部状态
     struct State* GetState() { return &_state; }
-    struct Record& GetRecord() { return _record; }
 
     double GetPower() const { return _state.totalPower; }
     double GetMoney() const { return _state.totalPower * 5; }
 
 
 private:
-    // 代表用户处于什么状态
-    struct State _state;
-
-    // 用于保存报表内容
-    struct Record _record;
+    // 房间状态
+    State _state;
 
     // 与dispatcher绑定的socket连接
     SOCKET _connection;
@@ -89,6 +67,9 @@ private:
 
     // server指针，以访问server维护的在线列表
     Connor_Socket::Server *_parent;
+
+    // 与该Dispatch绑定用户登出
+    void _Logout();
 
 };
 

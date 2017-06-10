@@ -8,7 +8,6 @@ using json = nlohmann::json;
 
 #include "src/model/roominfo.h"
 #include "src/model/roomrequest.h"
-#include "dispatch.h"
 #include "ormlite.h"
 
 using namespace ORMLite;
@@ -19,8 +18,10 @@ Server::Server()
       _persistThread(new std::thread([this](){
         std::this_thread::sleep_for(std::chrono::seconds(10));
 
+        // 使用_dispatchers是为了只检测可能更新的roomId
         for (const auto& pair : _dispatchers) {
-            PersistRoomRecord(pair.first);
+            if (!PersistRoomRecord(pair.first))
+                std::cout << "[ERROR] record " << pair.first << " unsuccessful" << std::endl;
         }
 
       })),
@@ -66,17 +67,28 @@ bool Server::PersistRoomRecord(int roomId) {
     QueryMessager<RoomInfo> messager(helper);
 
 
-    auto record = _dispatchers[roomId]->GetRecord();
+    auto& record = _rooms[roomId].second;
 
     // 查询用户背包信息
     auto result = mapper.Query(messager
                               .Where(Field(helper.room_id) == roomId));
 
     if (result) {
-        helper.count += record.count;
-        if(mapper.Update(helper))
+        if (messager.GetVector().size() == 0) {
+            helper.count = record.count;
+            helper.room_id = roomId;
+            if (!mapper.Insert(helper))
+                return false;
+        }
+        else {
+            int count = record.count;
+            std::cout << "count: " << count << std::endl;
+            helper.count = std::stoi(messager.GetVector()[0][1]) + count;
+            helper.room_id = roomId;
+            if(mapper.Update(helper))
             // 清除记录数
-            record.count -= helper.count;
+                record.count -= count;
+        }
     } else
         return false;
 
@@ -137,8 +149,7 @@ void Server::Start()
                     {
                         // 保证cout完整执行而不被其他线程打断
                         mtx.lock();
-                        // 若是在线状态，下线处理
-                        dispatcher.Logout();
+                        // 下线处理由dispatcher的析构函数进行
                         cout << "[INFO] Someone offline, now " << --_count << " connections in total" << endl;
                         mtx.unlock();
 
@@ -179,12 +190,16 @@ void Server::Start()
     }
 }
 
-bool Server::Online(int roomId, Dispatcher* connection)
+bool Server::Online(int roomId, std::string userId, Dispatcher* connection)
 {
-    // emplace返回一个pair，第二个元素为是否成功插入
-    // 若map中已经有一个同插入相同的key，则不进行插入
-    auto result = _dispatchers.emplace(std::make_pair(roomId, connection));
-    return result.second;
+    if (_rooms.find(roomId) != _rooms.end())
+        if (_rooms[roomId].first == userId) {
+            // emplace返回一个pair，第二个元素为是否成功插入
+            // 若map中已经有一个同插入相同的key，则不进行插入
+            auto result = _dispatchers.emplace(std::make_pair(roomId, connection));
+            return result.second;
+        }
+    return false;
 }
 
 void Server::Offline(int roomId)
@@ -194,7 +209,12 @@ void Server::Offline(int roomId)
 }
 
 bool Server::CheckIn(int roomId, std::string userId) {
-    auto result = _rooms.emplace(std::make_pair(roomId, userId));
+    auto result = _rooms.emplace(std::make_pair(
+                                     roomId, std::make_pair(
+                                         userId, Record{0, 0, std::list<struct Request>{}}
+                                         )
+                                     )
+                                 );
     return result.second;
 }
 
@@ -246,15 +266,12 @@ void Server::StopServe(Dispatcher *target) {
 
 
 double Server::GetRoomMoney(int roomId) {
-    if (_dispatchers.find(roomId) != _dispatchers.end())
-        return _dispatchers[roomId]->GetMoney();
-    else
-        return 0;
+    return GetRoomPower(roomId) * 5;
 }
 
 double Server::GetRoomPower(int roomId) {
-    if (_dispatchers.find(roomId) != _dispatchers.end())
-        return _dispatchers[roomId]->GetPower();
+    if (_rooms.find(roomId) != _rooms.end())
+        return _rooms[roomId].second.totalPower;
     else
         return 0;
 }

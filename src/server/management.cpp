@@ -153,8 +153,12 @@ void Management::InitConnect() {
         ui->userIdEdit->clear();
     });
 
+    // 退房结算
     connect(ui->checkOutButton, &QPushButton::clicked, [this](){
         int roomId = ui->roomId->currentText().toInt();
+        double power = _server->GetRoomPower(roomId);
+        double money = _server->GetRoomMoney(roomId);
+
         if (!_server->CheckOut(roomId))
             QMessageBox::information(this, "info", "this roomId is not checked in");
         else {
@@ -162,8 +166,8 @@ void Management::InitConnect() {
 
             // 结账界面
             _charge = new Charge(ui->roomId->currentText(), "",
-                                 QString::number(_server->GetRoomPower(roomId)),
-                                 QString::number(_server->GetRoomMoney(roomId)));
+                                 QString::number(power),
+                                 QString::number(money));
             _charge->show();
         }
 
@@ -185,6 +189,7 @@ void Management::InitConnect() {
 
     });
 
+    // 配置界面
     connect(ui->configureButton, &QPushButton::clicked, [this](){
        Configure *config = new Configure();
        connect(config, &Configure::change, [this](int maxServe, int frequence){
@@ -204,6 +209,7 @@ void Management::InitConnect() {
         ui->modeLabel->setEnabled(!ui->modeLabel->isEnabled());
     });
 
+    // UI各组件更新
     connect(_updateTimer, &QTimer::timeout, [this](){
         for (const auto& roomId : _roomIds) {
             auto* state = _server->GetRoomState(roomId);

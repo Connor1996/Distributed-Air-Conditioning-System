@@ -17,11 +17,26 @@ struct Setting {
     int frequence;
 };
 
+struct Request {
+    time_t beginTime;
+    time_t stopTime;
+    int beginTemp;
+    int stopTemp;
+    int beginSpeed;
+    int stopSpeed;
+    double money;
+};
+
+struct Record {
+    int count;      // 开关机次数
+    double totalPower;
+    std::list<struct Request> requests;
+};
+
 namespace Connor_Socket {
 
 class Server : Socket
 {
-    friend class Dispatcher;
 public:
     // 构造函数，打开监听接口等待请求
     Server();
@@ -30,27 +45,25 @@ public:
 
     void Start();
 
-    bool Online(int roomId, Dispatcher* connection);
-
+    // 用户从控机上线，验证roomId所对应的userId
+    // 同时检查是否已经由其他从控机登陆该roomId
+    bool Online(int roomId, std::string userId, Dispatcher* connection);
     void Offline(int roomId);
 
     bool CheckIn(int roomId, std::string userId);
-
     bool CheckOut(int roomId);
 
     bool Serve(Dispatcher *);
-
     void StopServe(Dispatcher *);
 
-    //const struct Setting& GetSetting() { return _setting; }
+    // 获取各种状态
     struct State* GetRoomState(int roomId);
-    double GetRoomMoney(int roomId);// { return _dispatchers[roomId]->GetMoney(); }
-    double GetRoomPower(int roomId);// { return _dispatchers[roomId]->GetPower(); }
+    double GetRoomMoney(int roomId);
+    double GetRoomPower(int roomId);
+    Record& GetRoomRecord(int roomId) { return _rooms[roomId].second; }
+    const std::unordered_map<int, Dispatcher*>& GetRoomMap() { return _dispatchers; }
 
-    const std::unordered_map<int, Dispatcher*>& GetRoomMap() {
-        return _dispatchers;
-    }
-
+    // 持久化房间记录
     bool PersistRoomRecord(int);
 
     Setting setting;
@@ -71,8 +84,8 @@ protected:
     // 持有用户名相对应的dispathcer
     std::unordered_map<int, Dispatcher*> _dispatchers;
 
-    // 房间对应的身份证号
-    std::unordered_map<int, std::string> _rooms;
+    // 房间对应的身份证号以及各项记录
+    std::unordered_map<int, std::pair<std::string, struct Record>> _rooms;
 
     // 所连接的socket数目
     int _count;

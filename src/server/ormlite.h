@@ -771,7 +771,7 @@ private:
         catch (const std::exception& e)
         {
             _errorMessage = e.what();
-            //std::cout << _errorMessage << std::endl;
+            std::cout << _errorMessage << std::endl;
             return false;
         }
     }
