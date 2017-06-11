@@ -1,4 +1,4 @@
-#ifndef WIDGET_H
+﻿#ifndef WIDGET_H
 #define WIDGET_H
 
 #include <QWidget>
@@ -11,7 +11,7 @@
 using namespace QtCharts;
 
 namespace Ui {
-class Widget;
+class Form;
 }
 
 class Form : public QWidget
@@ -27,7 +27,7 @@ public:
     ~Form();
 
 private:
-    Ui::Widget *ui;
+    Ui::Form *ui;
 
     void InitConnect();
 };

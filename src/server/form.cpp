@@ -1,9 +1,9 @@
-#include "form.h"
+﻿#include "form.h"
 #include "ui_form.h"
 
 Form::Form(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Widget)
+    ui(new Ui::Form)
 {
     ui->setupUi(this);
     InitConnect();
@@ -14,7 +14,7 @@ Form::Form(QWidget *parent) :
     ui->toolBox_3->setCurrentIndex(2);
 
     int bar_room[8];
-    for(int i=0; i<8; i++){
+    for(int i=0; i<8; i++) {
         bar_room[i] = i%4;
     }
     barinit(ui->page_1, bar_room);
