@@ -1,7 +1,10 @@
 ﻿#include "form.h"
 #include "ui_form.h"
+#include "request.h"
 
-Form::Form(QWidget *parent) :
+
+Form::Form(Server *server, QWidget *parent) :
+    _server(server),
     QWidget(parent),
     ui(new Ui::Form)
 {
@@ -9,15 +12,20 @@ Form::Form(QWidget *parent) :
     InitConnect();
 
     ui->tabWidget->setCurrentIndex(0);
+
     ui->toolBox->setCurrentIndex(2);
     ui->toolBox_2->setCurrentIndex(2);
     ui->toolBox_3->setCurrentIndex(2);
 
     int bar_room[8];
     for(int i=0; i<8; i++) {
-        bar_room[i] = i%4;
+        //bar_room[i] = 1;
+
+        bar_room[i] = _server->GetRoomCount(411+i);
     }
     barinit(ui->page_1, bar_room);
+    barinit(ui->page_4, bar_room);
+    barinit(ui->page_7, bar_room);
 
     QStringList combo_room;
     combo_room << "room" << "411" << "412" << "413" << "414" << "415" <<
@@ -28,8 +36,8 @@ Form::Form(QWidget *parent) :
 
 
     //page1 饼图
-    QGraphicsScene *piescene = new QGraphicsScene();
-    QGraphicsView *pieview = new QGraphicsView(ui->page_3);
+    piescene = new QGraphicsScene();
+    pieview = new QGraphicsView(ui->page_3);
     pieview->setScene(piescene);
     pieview->setRenderHint(QPainter::Antialiasing);
     piescene->setBackgroundBrush(QBrush(QColor(240, 240, 240)));
@@ -37,7 +45,7 @@ Form::Form(QWidget *parent) :
     pieview->setSizeIncrement(400,300);
     pieview->resizeAnchor();
 
-    QPieSeries *pieSeries = new QPieSeries();
+    pieSeries = new QPieSeries();
     pieSeries->append("411", 12);
     pieSeries->append("412", 12);
     pieSeries->append("413", 12);
@@ -47,15 +55,14 @@ Form::Form(QWidget *parent) :
     pieSeries->append("417", 12);
     pieSeries->append("418", 16);
 
-    QChart *pieChart = new QChart();
+    pieChart = new QChart();
     pieChart->addSeries(pieSeries);  // 将 series 添加至图表中
     pieChart->legend()->setAlignment(Qt::AlignRight);  // 设置图例靠右显示
     pieChart->setTitle("Simple pie chart");
     pieChart->setGeometry(10, 10, 400, 300);
     piescene->addItem(pieChart);
     //room_cost table
-    QStandardItemModel *model3 = new QStandardItemModel();
-
+    model3 = new QStandardItemModel();
     model3->setColumnCount(2);
     model3->setHeaderData(0,Qt::Horizontal,"roomid");
     model3->setHeaderData(1,Qt::Horizontal,"cost");
@@ -67,8 +74,8 @@ Form::Form(QWidget *parent) :
     ui->costtable->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Fixed);
 
     //page2 折线图
-    QGraphicsScene *linescene = new QGraphicsScene();
-    QGraphicsView *lineview = new QGraphicsView(ui->page_6);
+    linescene = new QGraphicsScene();
+    lineview = new QGraphicsView(ui->page_6);
     lineview->setScene(linescene);
     lineview->setRenderHint(QPainter::Antialiasing);
     linescene->setBackgroundBrush(QBrush(QColor(240, 240, 240)));
@@ -82,13 +89,12 @@ Form::Form(QWidget *parent) :
     axisX->setRange(1,7);
 
 
-
     // 构建 series，作为图表的数据源
-    QLineSeries *lineseries = new QLineSeries();
+    lineseries = new QLineSeries();
     for(int i=0; i<7; i++){
         lineseries->append(i+1, i%3);
     }
-    QChart *lineChart = new QChart();
+    lineChart = new QChart();
     lineChart->addSeries(lineseries);  // 将 series 添加至图表中
     lineChart->setAxisX(axisX, lineseries);
     lineChart->setAxisY(axisY, lineseries);
@@ -100,8 +106,8 @@ Form::Form(QWidget *parent) :
     linescene->addItem(lineChart);
 
     //page3 折线图
-    QGraphicsScene *monthlinescene = new QGraphicsScene();
-    QGraphicsView *monthlineview = new QGraphicsView(ui->page_9);
+    monthlinescene = new QGraphicsScene();
+    monthlineview = new QGraphicsView(ui->page_9);
     monthlineview->setScene(monthlinescene);
     monthlineview->setRenderHint(QPainter::Antialiasing);
     monthlinescene->setBackgroundBrush(QBrush(QColor(240, 240, 240)));
@@ -120,7 +126,7 @@ Form::Form(QWidget *parent) :
         monthlineseries->append(i, i%6);
     }
 
-    QChart *monthlineChart = new QChart();
+    monthlineChart = new QChart();
     monthlineChart->addSeries(monthlineseries);  // 将 series 添加至图表中
     monthlineChart->setAxisX(monthaxisX, monthlineseries);
     monthlineChart->setAxisY(monthaxisY, monthlineseries);
@@ -134,6 +140,19 @@ Form::Form(QWidget *parent) :
 
 Form::~Form()
 {
+    delete piescene;
+    delete pieview;
+    delete pieSeries;
+    delete pieChart;
+    delete model3;
+    delete linescene;
+    delete lineview;
+    delete lineseries;
+    delete lineChart;
+    delete monthlinescene;
+    delete monthlineview;
+    delete monthlineseries;
+    delete monthlineChart;
     delete ui;
 }
 
@@ -141,8 +160,25 @@ void Form::InitConnect() {
     connect(ui->comboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
             , [this](QString index){
                     if(index != "room") {
-                        QStringList data;
-                        tableinit(ui->tableView, data);
+                        //std::vector<Request> data;
+                        //data = _server->GetRoomRequests(index.toInt());
+                        tableinit(ui->tableView, _server->GetRoomRequests(index.toInt()));
+                    }
+    });
+    connect(ui->comboBox_2, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
+            , [this](QString index){
+                    if(index != "room") {
+                        //std::vector<Request> data;
+                        //data = _server->GetRoomRequests(index.toInt());
+                        tableinit(ui->tableView_2, _server->GetRoomRequests(index.toInt()));
+                    }
+    });
+    connect(ui->comboBox_3, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
+            , [this](QString index){
+                    if(index != "room") {
+                        //std::vector<Request> data;
+                        //data = _server->GetRoomRequests(index.toInt());
+                        tableinit(ui->tableView_3, _server->GetRoomRequests(index.toInt()));
                     }
     });
 }
@@ -184,11 +220,11 @@ void Form::barinit(QWidget *w, int *s){
     barscene->addItem(barchart);
 }
 
-void Form::tableinit(QTableView *t, QStringList data){
+void Form::tableinit(QTableView *t, std::vector<Request> data){
     //tableview
     QStandardItemModel *model = new QStandardItemModel();
 
-    model->setColumnCount(6);
+    model->setColumnCount(7);
 /*
     model->setHeaderData(0,Qt::Horizontal,QString::fromUtf8("温控开始时间"));
     model->setHeaderData(1,Qt::Horizontal,QString::fromUtf8("温控结束时间"));
@@ -201,8 +237,9 @@ void Form::tableinit(QTableView *t, QStringList data){
     model->setHeaderData(1,Qt::Horizontal,"endtime");
     model->setHeaderData(2,Qt::Horizontal,"starttemp");
     model->setHeaderData(3,Qt::Horizontal,"endtemp");
-    model->setHeaderData(4,Qt::Horizontal,"speed");
-    model->setHeaderData(5,Qt::Horizontal,"cost");
+    model->setHeaderData(4,Qt::Horizontal,"startspeed");
+    model->setHeaderData(5,Qt::Horizontal,"endspeed");
+    model->setHeaderData(6,Qt::Horizontal,"cost");
     t->setModel(model);
     t->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
 
@@ -212,28 +249,30 @@ void Form::tableinit(QTableView *t, QStringList data){
     t->horizontalHeader()->setSectionResizeMode(3,QHeaderView::Fixed);
     t->horizontalHeader()->setSectionResizeMode(4,QHeaderView::Fixed);
     t->horizontalHeader()->setSectionResizeMode(5,QHeaderView::Fixed);
+    t->horizontalHeader()->setSectionResizeMode(6,QHeaderView::Fixed);
+
  /*   ui->tableView->setColumnWidth(0,100);
     ui->tableView->setColumnWidth(1,100);
     ui->tableView->setColumnWidth(2,100);
     ui->tableView->setColumnWidth(3,100);
     ui->tableView->setColumnWidth(4,100);
     ui->tableView->setColumnWidth(5,100);*/
-    data<<"2017/1/1/00:00"<<"2017/1/1/02:00"<<"26"<<"27"<<"high"<<"100"<<"end";
-    QString starttime,endtime,starttemp,endtemp,speed,cost;
-    int i=0,j=0,k=0;
-    while(data.at(k)!="end"){
-        starttime=data.at(k++);
-        endtime=data.at(k++);
-        starttemp=data.at(k++);
-        endtemp=data.at(k++);
-        speed=data.at(k++);
-        cost=data.at(k++);
-        model->setItem(i,j++,new QStandardItem(starttime));
-        model->setItem(i,j++,new QStandardItem(endtime));
-        model->setItem(i,j++,new QStandardItem(starttemp));
-        model->setItem(i,j++,new QStandardItem(endtemp));
-        model->setItem(i,j++,new QStandardItem(speed));
-        model->setItem(i,j++,new QStandardItem(cost));
-        j=0,i++;
+
+    QString starttime,endtime,starttemp,endtemp,startspeed,endspeed,cost;
+    for(int i=0; i<data.size(); i++){
+        starttime = QString::number(data[i].beginTime, 10);
+        endtime = QString::number(data[i].stopTime, 10);
+        starttemp = QString::number(data[i].beginTemp, 10);
+        endtemp = QString::number(data[i].stopTemp, 10);
+        startspeed = QString::number(data[i].beginSpeed, 10);
+        endspeed = QString::number(data[i].stopSpeed, 10);
+        cost = QString::number(data[i].money, 'g', 6);
+        model->setItem(i,0,new QStandardItem(starttime));
+        model->setItem(i,1,new QStandardItem(endtime));
+        model->setItem(i,2,new QStandardItem(starttemp));
+        model->setItem(i,3,new QStandardItem(endtemp));
+        model->setItem(i,4,new QStandardItem(startspeed));
+        model->setItem(i,5,new QStandardItem(endspeed));
+        model->setItem(i,6,new QStandardItem(cost));
     }
 }

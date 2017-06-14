@@ -52,8 +52,9 @@ public:
 
     // 持久化房间记录
     bool PersistRoomRecord(int);
-
+    //获得房间请求
     std::vector<Request> GetRoomRequests(int);
+    //获得房间开关次数
     int GetRoomCount(int);
 
     Setting setting;

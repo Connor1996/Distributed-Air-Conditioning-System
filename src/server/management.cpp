@@ -237,7 +237,7 @@ void Management::InitConnect() {
     });
 
     connect(ui->reportButton, &QPushButton::clicked, [this](){
-        Form *form = new Form();
+        Form *form = new Form(_server);
         form->show();
     });
 }
