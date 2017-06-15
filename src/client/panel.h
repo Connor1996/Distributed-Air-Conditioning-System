@@ -12,7 +12,7 @@ using json = nlohmann::json;
 
 const int NOTIFY_PERIOD = 1000;
 const int SEND_WAIT_PERIOD = 1000;
-const int ROTAIONAL_SIZE = 156;
+const int ROTAIONAL_SIZE = 32;
 
 namespace Ui {
 class Panel;

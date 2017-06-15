@@ -11,6 +11,7 @@
 
 #include <QTimer>
 #include <QMessageBox>
+#include <QPixmap>
 #include <thread>
 
 using Connor_Socket::Client;
@@ -122,9 +123,9 @@ void Panel::EnableItems() {
     ui->windDown->setEnabled(true);
     ui->modeButton->setEnabled(true);
     ui->windSpeed->setText(QString::fromWCharArray(SpeedStr[(int)ca.speed].c_str()));
-    ui->mode->setText(QString::fromWCharArray(L"制冷"));
-    ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
-    ui->expectedTemp->setText(QString::number(ca.expTemp) + QString::fromWCharArray(L" 度"));
+    ui->mode_lable->setPixmap(QPixmap(":/server/cold"));
+    ui->realLCD->display(ca.temp);
+    ui->expLCD->display(ca.expTemp);
     ui->originalTemp->setText(QString::number(ca.original_temp) + QString::fromWCharArray(L" 度"));
     //notifyTimer->start(NOTIFY_PERIOD);
 }
@@ -134,7 +135,7 @@ void Panel::TempUpClicked() {
     int upper_bound = ca.is_heat_mode ? (int)HeatRange::UPPER_BOUND : (int)ColdRange::UPPER_BOUND;
     if (this->ca.expTemp != upper_bound) {
         ca.expTemp++;
-        this->ui->expectedTemp->setText(QString::number(ca.expTemp) + QString::fromWCharArray(L" 度"));
+        ui->expLCD->display(ca.expTemp);
         if (!sendTimer->isActive())
             sendTimer->start(SEND_WAIT_PERIOD);
     }
@@ -144,7 +145,7 @@ void Panel::TempDownClicked() {
     int lower_bound = ca.is_heat_mode ? (int)HeatRange::LOWER_BOUND : (int)ColdRange::LOWER_BOUND;
     if (this->ca.expTemp != lower_bound) {
         ca.expTemp--;
-        this->ui->expectedTemp->setText(QString::number(ca.expTemp) + QString::fromWCharArray(L" 度"));
+        this->ui->expLCD->display(ca.expTemp);
         if (!sendTimer->isActive())
             sendTimer->start(SEND_WAIT_PERIOD);
     }
@@ -178,7 +179,8 @@ void Panel::WindDownClicked() {
 
 void Panel::ModeClicked() {
     ca.is_heat_mode = !ca.is_heat_mode;
-    this->ui->mode->setText(QString::fromWCharArray(ca.is_heat_mode ? L"制热" : L"制冷"));
+    QPixmap picture = ca.is_heat_mode ? ":/server/warm" : ":/server/cold";
+    this->ui->mode_lable->setPixmap(picture);
     ReportState();
 }
 
@@ -199,11 +201,11 @@ void Panel::SwitchClicked() {
 void Panel::AdjustTemp() {
     if (ca.expTemp > ca.temp) {
         ca.temp = ca.temp + 1 > ca.expTemp ? ca.expTemp : ca.temp + 1;
-        this->ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
+        this->ui->realLCD->display(ca.temp);
     }
     if (ca.expTemp < ca.temp) {
         ca.temp = ca.temp - 1 < ca.expTemp ? ca.expTemp : ca.temp - 1;
-        this->ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
+        this->ui->realLCD->display(ca.temp);
     }
     if (ca.expTemp == ca.temp) {
         if (tempTimer->isActive())
@@ -332,11 +334,11 @@ void Panel::RecoverTemp() {
     }
     if (recoveryTimer->isActive() && ca.temp < ca.original_temp) {
         ca.temp = ca.temp + 1 > ca.original_temp ? ca.original_temp : ca.temp + 1;
-        this->ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
+        this->ui->realLCD->display(ca.temp);
     }
     if (recoveryTimer->isActive() && ca.temp > ca.original_temp) {
         ca.temp = ca.temp - 1 < ca.original_temp ? ca.original_temp : ca.temp - 1;
-        this->ui->temperature->setText(QString::number(ca.temp) + QString::fromWCharArray(L" 度"));
+        this->ui->realLCD->display(ca.temp);
     }
 }
 
