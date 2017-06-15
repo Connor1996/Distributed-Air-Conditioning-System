@@ -123,16 +123,16 @@ void Management::InitWidget() {
 void Management::InitConnect() {
     connect(ui->tempDownButton, &QPushButton::clicked, [this](){
         if(_server->setting.isHeatMode)
-            ui->tempNumber->display(std::max(30, ui->tempNumber->intValue() - 1));
-        else
             ui->tempNumber->display(std::max(25, ui->tempNumber->intValue() - 1));
+        else
+            ui->tempNumber->display(std::max(18, ui->tempNumber->intValue() - 1));
     });
 
     connect(ui->tempUpButton, &QPushButton::clicked, [this](){
         if(_server->setting.isHeatMode)
-            ui->tempNumber->display(std::min(25, ui->tempNumber->intValue() + 1));
+            ui->tempNumber->display(std::min(30, ui->tempNumber->intValue() + 1));
         else
-            ui->tempNumber->display(std::min(18, ui->tempNumber->intValue() + 1));
+            ui->tempNumber->display(std::min(25, ui->tempNumber->intValue() + 1));
     });
 
     connect(ui->checkInButton, &QPushButton::clicked, [this](){

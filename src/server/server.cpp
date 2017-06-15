@@ -197,13 +197,16 @@ void Server::Start()
                         closesocket(connection);
                         break;
                     }
-                    cout << "[INFO] receive message: " << recvBuf << endl;
+
+                    string receiveInfo(recvBuf);
+                    receiveInfo = receiveInfo.substr(0, receiveInfo.find("}") + 1);
+                    cout << "[INFO] receive message: " << receiveInfo << endl;
 
                     std::string responseStr;
                     try
                     {
                         // 调用Dispatcher分发到相应处理逻辑
-                        responseStr = dispatcher.Dispatch(std::move(json::parse(recvBuf)));
+                        responseStr = dispatcher.Dispatch(std::move(json::parse(receiveInfo)));
                     }
                     catch (std::exception e)
                     {

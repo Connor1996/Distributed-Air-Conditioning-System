@@ -28,11 +28,18 @@ unsigned int Random(int max)
    return (unsigned int)((double)number / ((double)UINT_MAX + 1) * double(max)) + 1;
 }
 
-Panel::Panel(QWidget *parent) :
+Panel::Panel(Connor_Socket::Client* client, QWidget *parent) :
     QWidget(parent),
+    _client(client),
+    _clientThread(new std::thread([this](){
+        while(true)
+            ReceiveHandle(_client->Receive());
+    })),
     ui(new Ui::Panel)
 {
     ui->setupUi(this);
+    InitWidget();
+    InitConnect();
 }
 
 Panel::~Panel()
@@ -112,12 +119,6 @@ void Panel::EnableItems() {
     //notifyTimer->start(NOTIFY_PERIOD);
 }
 
-void Panel::Show(Connor_Socket::Client* c) {
-    _client = c;
-    InitWidget();
-    InitConnect();
-    this->show();
-}
 
 void Panel::TempUpClicked() {
     int upper_bound = ca.is_heat_mode ? (int)HeatRange::UPPER_BOUND : (int)ColdRange::UPPER_BOUND;
@@ -211,25 +212,27 @@ void Panel::ReportState() {
         {"real_temp", ca.temp},
         {"speed", TempInc[(int)ca.speed]}
     };
-    json recvInfo;
+
     try {
-        recvInfo= json::parse(_client->Send(sendInfo.dump()));
-    }
-    catch (std::exception e) {
+        _client->Send(sendInfo.dump());
+    } catch (std::exception e) {
         delete _client;
-        _client = nullptr;
         QMessageBox::information(this, "info", "Can not connect server");
         DisableItems();
         this->close();
         return;
     }
+}
 
+
+
+void Panel::ReceiveHandle(json recvInfo) {
     if (!recvInfo.empty() && recvInfo.find("ret") != recvInfo.end()
             && recvInfo["ret"].get<int>() == REPLY_CON) {
         if (recvInfo.find("power") != recvInfo.end())
             ui->power->setText(QString::number(recvInfo["power"].get<double>()) + QString::fromWCharArray(L" 瓦特"));
-        if (recvInfo.find("money") != recvInfo.end())
-            ui->cost->setText(QString::number(recvInfo["money"].get<double>()) + QString::fromWCharArray(L" 元"));
+        if (recvInfo.find("cost") != recvInfo.end())
+            ui->cost->setText(QString::number(recvInfo["cost"].get<double>()) + QString::fromWCharArray(L" 元"));
         if (recvInfo.find("frequence") != recvInfo.end()) {
             if (ca.is_on && !notifyTimer->isActive()) {
                 ca.ntfy_frequence = recvInfo["frequence"].get<int>();

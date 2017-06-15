@@ -6,6 +6,9 @@
 #include "client.h"
 #include "conditionorattr.h"
 #include "src/rotationlabel.h"
+#include "src/include/json.hpp"
+
+using json = nlohmann::json;
 
 const int NOTIFY_PERIOD = 1000;
 const int SEND_WAIT_PERIOD = 1000;
@@ -20,7 +23,7 @@ class Panel : public QWidget
     Q_OBJECT
 
 public:
-    explicit Panel(QWidget *parent = 0);
+    explicit Panel(Connor_Socket::Client *, QWidget *parent = 0);
     ~Panel();
 
 private:
@@ -28,15 +31,19 @@ private:
     void InitConnect();
     void DisableItems();
     void EnableItems();
+    void ReceiveHandle(json recvInfo);
+
     Ui::Panel *ui;
     Connor_Socket::Client *_client;
+
     ConditionorAttr ca;
     QTimer* tempTimer, *notifyTimer, *recoveryTimer, *sendTimer;
     RotationLabel* clientRotationable;
     QVBoxLayout* vwrVLayout;
 
+    std::thread *_clientThread;
+
 private slots:
-    void Show(Connor_Socket::Client* c);
     void TempUpClicked();
     void TempDownClicked();
     void WindUpClicked();

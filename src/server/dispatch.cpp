@@ -141,7 +141,7 @@ json Dispatcher::StateHandle(json &requestInfo)
     json responseInfo = {
         {"ret", REPLY_CON},
         {"is_valid", isValid},
-        {"money", _state.totalPower * 5},
+        {"cost", _state.totalPower * 5},
         {"power", _state.totalPower},
         {"frequence", _parent->setting.frequence}
     };

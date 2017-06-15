@@ -3,11 +3,11 @@
 
 namespace HeatRange {
     const int UPPER_BOUND = 30;
-    const int LOWER_BOUND = 18;
+    const int LOWER_BOUND = 25;
 }
 namespace ColdRange {
-    const int UPPER_BOUND = 28;
-    const int LOWER_BOUND = 16;
+    const int UPPER_BOUND = 25;
+    const int LOWER_BOUND = 18;
 }
 enum Speed { SLOW_SPEED = 0, NORMAL_SPEED = 1, FAST_SPEED = 2 };
 const int TempInc[3] = {1, 2, 3}; //每秒变化的温度

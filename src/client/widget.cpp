@@ -36,10 +36,6 @@ void Widget::InitConnect()
 Widget::~Widget()
 {
     delete ui;
-//    if (_client != nullptr) {
-//        delete _client;
-//        _client = nullptr;
-//    }
     delete _client;
 }
 
@@ -75,6 +71,7 @@ void Widget::Login()
             port = this->ui->portLineEdit->text().toInt();
         }
         _client = new Client(room, ipaddr, port);
+
         int room_id = atoi(room.c_str());
         json sendInfo = {
             {"op", LOG_IN_USER},
@@ -82,15 +79,16 @@ void Widget::Login()
             {"user_id", user_id}
         };
         json receiveInfo;
+
         try {
             receiveInfo = json::parse(_client->Connect(sendInfo.dump()));
-        }
-        catch (std::exception e) {
+        } catch (std::exception e) {
+            std::cout << e.what() << std::endl;;
             delete _client;
-            _client = nullptr;
             QMessageBox::information(this, "info", "Can not connect server");
             return;
         }
+
         if (receiveInfo["ret"].get<int>() == LOG_IN_FAIL) {
             QMessageBox::information(this, "info", "Room No. or ID incorrect");
         }
@@ -99,7 +97,8 @@ void Widget::Login()
             this->ui->RoomEdit->clear();
             this->ui->RoomEdit->setFocus();
             this->close();
-            emit toPanel(_client);
+            Panel* p(new Panel(_client));
+            p->show();
         }
     }
 }
