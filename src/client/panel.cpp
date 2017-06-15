@@ -32,9 +32,11 @@ Panel::Panel(Connor_Socket::Client* client, QWidget *parent) :
     QWidget(parent),
     _client(client),
     _clientThread(new std::thread([this](){
-        while(true)
+        while(true) {
             ReceiveHandle(_client->Receive());
+        }
     })),
+    st({0, 0, false, 500}),
     ui(new Ui::Panel)
 {
     ui->setupUi(this);
@@ -55,20 +57,27 @@ Panel::~Panel()
 void Panel::InitWidget() {
     this->setWindowTitle(QString::fromWCharArray(L"从控机"));
     this->setWindowIcon(QIcon(":/server/fan"));
+
     vwrVLayout = new QVBoxLayout(ui->viewer);
     clientRotationable = new RotationLabel(ROTAIONAL_SIZE, RotateRatio[1], NULL);
     clientRotationable->resize(ROTAIONAL_SIZE, ROTAIONAL_SIZE);
     vwrVLayout->addWidget(clientRotationable);
+
     ca.is_on = false;
     ca.is_heat_mode = false;
     ca.speed = Speed::NORMAL_SPEED;
     ca.expTemp = ca.temp = ca.original_temp = ca.is_heat_mode ?  (int)HeatRange::LOWER_BOUND + Random((int)HeatRange::UPPER_BOUND - (int)HeatRange::LOWER_BOUND)
               : (int)ColdRange::LOWER_BOUND + Random((int)ColdRange::UPPER_BOUND - (int)ColdRange::LOWER_BOUND);
     ca.ntfy_frequence = NOTIFY_PERIOD;
+
     tempTimer = new QTimer();
     notifyTimer = new QTimer();
     recoveryTimer = new QTimer();
     sendTimer = new QTimer();
+
+    updateTimer = new QTimer();
+    updateTimer->start(100);
+
     DisableItems();
 }
 
@@ -83,6 +92,7 @@ void Panel::InitConnect() {
     QObject::connect(this->notifyTimer, SIGNAL(timeout()), this, SLOT(ReportState()));
     QObject::connect(this->recoveryTimer, SIGNAL(timeout()), this, SLOT(RecoverTemp()));
     QObject::connect(this->sendTimer, SIGNAL(timeout()), this, SLOT(ClusterSend()));
+    connect(this->updateTimer, SIGNAL(timeout()), this, SLOT(Update()));
 }
 
 
@@ -224,49 +234,92 @@ void Panel::ReportState() {
     }
 }
 
+void Panel::Update()
+{
+    ui->power->setText(QString::number(st.power) + QString::fromWCharArray(L" 瓦特"));
+    ui->cost->setText(QString::number(st.cost) + QString::fromWCharArray(L" 元"));
+    if (ca.is_on && !notifyTimer->isActive()) {
+        ca.ntfy_frequence = st.frequence;
+        notifyTimer->start(ca.ntfy_frequence);
+    }
+    if (notifyTimer->isActive() && ca.ntfy_frequence != st.frequence) {
+        ca.ntfy_frequence = st.frequence;
+        notifyTimer->stop();
+        notifyTimer->start(ca.ntfy_frequence);
+    }
 
-
-void Panel::ReceiveHandle(json recvInfo) {
-    if (!recvInfo.empty() && recvInfo.find("ret") != recvInfo.end()
-            && recvInfo["ret"].get<int>() == REPLY_CON) {
-        if (recvInfo.find("power") != recvInfo.end())
-            ui->power->setText(QString::number(recvInfo["power"].get<double>()) + QString::fromWCharArray(L" 瓦特"));
-        if (recvInfo.find("cost") != recvInfo.end())
-            ui->cost->setText(QString::number(recvInfo["cost"].get<double>()) + QString::fromWCharArray(L" 元"));
-        if (recvInfo.find("frequence") != recvInfo.end()) {
-            if (ca.is_on && !notifyTimer->isActive()) {
-                ca.ntfy_frequence = recvInfo["frequence"].get<int>();
-                notifyTimer->start(ca.ntfy_frequence);
-            }
-            if (notifyTimer->isActive() && ca.ntfy_frequence != recvInfo["frequence"].get<int>()) {
-                ca.ntfy_frequence = recvInfo["frequence"].get<int>();
-                notifyTimer->stop();
-                notifyTimer->start(ca.ntfy_frequence);
-            }
+    if (st.is_valid) {
+        if (!tempTimer->isActive()) {
+            tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
         }
-        if (recvInfo.find("is_valid") != recvInfo.end()) {
-            if (recvInfo["is_valid"].get<bool>()) {
-                if (!tempTimer->isActive()) {
-                    tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
-                }
-                if (!this->clientRotationable->isActive())
-                    this->clientRotationable->Start();
-                if (recoveryTimer->isActive()) {
-                    std::cout << "stop recovery timer" << std::endl;
-                    recoveryTimer->stop();
-                }
-            }
-            else {
-                if (tempTimer->isActive()) {
-                    tempTimer->stop();
-                }
-                if (this->clientRotationable->isActive())
-                    this->clientRotationable->Stop();
-                if (!recoveryTimer->isActive())
-                    recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
-            }
+        if (!this->clientRotationable->isActive())
+            this->clientRotationable->Start();
+        if (recoveryTimer->isActive()) {
+            std::cout << "stop recovery timer" << std::endl;
+            recoveryTimer->stop();
         }
     }
+    else {
+        if (tempTimer->isActive()) {
+            tempTimer->stop();
+        }
+        if (this->clientRotationable->isActive())
+            this->clientRotationable->Stop();
+        if (!recoveryTimer->isActive())
+            recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
+    }
+}
+
+void Panel::ReceiveHandle(json recvInfo) {
+    if (recvInfo["ret"].get<int>() == REPLY_CON) {
+        st.power = recvInfo["power"].get<double>();
+        st.cost = recvInfo["cost"].get<double>();
+        st.frequence = recvInfo["frequence"].get<int>();
+        st.is_valid = recvInfo["is_valid"].get<bool>();
+    }
+
+
+
+//    if (!recvInfo.empty() && recvInfo.find("ret") != recvInfo.end()
+//            && recvInfo["ret"].get<int>() == REPLY_CON) {
+//        if (recvInfo.find("power") != recvInfo.end())
+//            ui->power->setText(QString::number()) + QString::fromWCharArray(L" 瓦特"));
+//        if (recvInfo.find("cost") != recvInfo.end())
+//            ui->cost->setText(QString::number() + QString::fromWCharArray(L" 元"));
+//        if (recvInfo.find("frequence") != recvInfo.end()) {
+//            if (ca.is_on && !notifyTimer->isActive()) {
+//                ca.ntfy_frequence = recvInfo["frequence"].get<int>();
+//                notifyTimer->start(ca.ntfy_frequence);
+//            }
+//            if (notifyTimer->isActive() && ca.ntfy_frequence != recvInfo["frequence"].get<int>()) {
+//                ca.ntfy_frequence = recvInfo["frequence"].get<int>();
+//                notifyTimer->stop();
+//                notifyTimer->start(ca.ntfy_frequence);
+//            }
+//        }
+//        if (recvInfo.find("is_valid") != recvInfo.end()) {
+//            if (recvInfo["is_valid"].get<bool>()) {
+//                if (!tempTimer->isActive()) {
+//                    tempTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)ca.speed]);
+//                }
+//                if (!this->clientRotationable->isActive())
+//                    this->clientRotationable->Start();
+//                if (recoveryTimer->isActive()) {
+//                    std::cout << "stop recovery timer" << std::endl;
+//                    recoveryTimer->stop();
+//                }
+//            }
+//            else {
+//                if (tempTimer->isActive()) {
+//                    tempTimer->stop();
+//                }
+//                if (this->clientRotationable->isActive())
+//                    this->clientRotationable->Stop();
+//                if (!recoveryTimer->isActive())
+//                    recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
+//            }
+//        }
+//    }
 }
 
 void Panel::RecoverTemp() {

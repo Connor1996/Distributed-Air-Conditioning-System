@@ -38,10 +38,18 @@ private:
 
     ConditionorAttr ca;
     QTimer* tempTimer, *notifyTimer, *recoveryTimer, *sendTimer;
+    QTimer* updateTimer;
     RotationLabel* clientRotationable;
     QVBoxLayout* vwrVLayout;
 
     std::thread *_clientThread;
+
+    struct State{
+        double power;
+        double cost;
+        bool is_valid;
+        int frequence;
+    } st;
 
 private slots:
     void TempUpClicked();
@@ -54,6 +62,8 @@ private slots:
     void ReportState();
     void RecoverTemp();
     void ClusterSend();
+
+    void Update();
 };
 
 #endif // PANEL_H
