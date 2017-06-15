@@ -97,7 +97,10 @@ void Widget::Login()
             this->ui->RoomEdit->clear();
             this->ui->RoomEdit->setFocus();
             this->close();
-            Panel* p(new Panel(_client));
+            Panel* p(new Panel(_client,
+                               receiveInfo["is_heat_mode"].get<bool>(),
+                               receiveInfo["default"].get<int>()
+                    ));
             p->show();
         }
     }

@@ -12,7 +12,7 @@ using json = nlohmann::json;
 
 const int NOTIFY_PERIOD = 1000;
 const int SEND_WAIT_PERIOD = 1000;
-const int ROTAIONAL_SIZE = 32;
+const int ROTAIONAL_SIZE = 256;
 
 namespace Ui {
 class Panel;
@@ -23,7 +23,7 @@ class Panel : public QWidget
     Q_OBJECT
 
 public:
-    explicit Panel(Connor_Socket::Client *, QWidget *parent = 0);
+    explicit Panel(Connor_Socket::Client *, bool, int, QWidget *parent = 0);
     ~Panel();
 
 private:

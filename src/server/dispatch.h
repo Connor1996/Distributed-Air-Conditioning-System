@@ -30,8 +30,8 @@ public:
     // @param:
     //      connection  与相应客户端建立的socket连接
     //      parent      server对象指针
-    Dispatcher(SOCKET &connection, Connor_Socket::Server *parent)
-        : _connection(connection), _parent(parent),
+    Dispatcher(SOCKET &connection, Connor_Socket::Server *server)
+        : _connection(connection), _server(server),
           _state({false, false, 0, 0, 1, 0})
     { }
 
@@ -66,7 +66,7 @@ private:
     int _roomId;
 
     // server指针，以访问server维护的在线列表
-    Connor_Socket::Server *_parent;
+    Connor_Socket::Server *_server;
 
     // 与该Dispatch绑定用户登出
     void _Logout();

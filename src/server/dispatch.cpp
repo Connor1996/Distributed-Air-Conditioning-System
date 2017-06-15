@@ -17,9 +17,9 @@ Dispatcher::~Dispatcher() {
     // 强制持久化
     // 因为周期性持久化只持久化dispatcher在线的roomId
     // 所以dispatcher下线前需要刷新一下距离上次周期持久化后的剩余request
-    if (!_parent->PersistRoomRecord(_roomId))
+    if (!_server->PersistRoomRecord(_roomId))
         std::cout << "[ERROR] lose some records of " << _roomId << std::endl;
-    _parent->GetRoomRecord(_roomId).totalPower += _state.totalPower;
+    _server->GetRoomRecord(_roomId).totalPower += _state.totalPower;
     // 下线处理，从server的_dispatchers的map中删除
     _Logout();
 }
@@ -58,10 +58,10 @@ json Dispatcher::LoginHandle(json &requestInfo)
     responseInfo["ret"] = LOG_IN_FAIL;
 
     // 使用用户名及密码尝试登陆
-    if (_parent->Online(roomId, userId, this)) {
+    if (_server->Online(roomId, userId, this)) {
         responseInfo["ret"] = LOG_IN_SUCC;
-        responseInfo["is_heat_mode"] = _parent->setting.isHeatMode;
-        responseInfo["default"] = _parent->setting.setTemperature;
+        responseInfo["is_heat_mode"] = _server->setting.isHeatMode;
+        responseInfo["default"] = _server->setting.setTemperature;
 
         _roomId = roomId;
     }
@@ -81,7 +81,7 @@ json Dispatcher::StateHandle(json &requestInfo)
     static int beginTemp;
     static int beginPower;
 
-    Record& record = _parent->GetRoomRecord(_roomId);
+    Record& record = _server->GetRoomRecord(_roomId);
 
     _state.isHeatMode = requestInfo["is_heat_mode"].get<bool>();
     _state.realTemperature = requestInfo["real_temp"].get<int>();
@@ -92,12 +92,12 @@ json Dispatcher::StateHandle(json &requestInfo)
 
     // 从送风队列删除
     if(!requestInfo["is_on"].get<bool>()) {
-        _parent->StopServe(this);
+        _server->StopServe(this);
         _state.isOn = false;
         record.count++;
     } else {
-        if (_parent->setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
-                _state.isHeatMode == _parent->setting.isHeatMode) {
+        if (_server->setting.isPowerOn && requestInfo["is_on"].get<bool>() &&
+                _state.isHeatMode == _server->setting.isHeatMode) {
             if (_state.isHeatMode && _state.setTemperature > _state.realTemperature)
                 isValid = true;
             else if (!_state.isHeatMode && _state.setTemperature < _state.realTemperature)
@@ -105,23 +105,23 @@ json Dispatcher::StateHandle(json &requestInfo)
         }
 
         // 判断送风队列是否空闲
-        if (isValid && !_parent->Serve(this))
+        if (isValid && !_server->Serve(this))
             isValid = false;
 
 
     }
 
     if (!isValid)
-        _parent->StopServe(this);
+        _server->StopServe(this);
     _state.isOn = isValid;
 
     if (isValid) {
         if (_state.speed == LOW_SPEED)
-            _state.totalPower += 0.8 * _parent->setting.frequence / 1000;
+            _state.totalPower += 0.8 * _server->setting.frequence / 1000;
         else if (_state.speed == NORMAL_SPEED)
-            _state.totalPower += 1.0 * _parent->setting.frequence / 1000;
+            _state.totalPower += 1.0 * _server->setting.frequence / 1000;
         else if (_state.speed == HIGH_SPEED)
-            _state.totalPower += 1.3 * _parent->setting.frequence / 1000;
+            _state.totalPower += 1.3 * _server->setting.frequence / 1000;
     }
 
     if (preValid == false && isValid == true) {
@@ -147,7 +147,7 @@ json Dispatcher::StateHandle(json &requestInfo)
         {"is_valid", isValid},
         {"cost", _state.totalPower * 5},
         {"power", _state.totalPower},
-        {"frequence", _parent->setting.frequence}
+        {"frequence", _server->setting.frequence}
     };
 
     return responseInfo;
@@ -156,5 +156,6 @@ json Dispatcher::StateHandle(json &requestInfo)
 
 void Dispatcher::_Logout()
 {
-    _parent->Offline(_roomId);
+    _server->StopServe(this);
+    _server->Offline(_roomId);
 }

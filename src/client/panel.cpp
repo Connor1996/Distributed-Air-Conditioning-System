@@ -29,7 +29,7 @@ unsigned int Random(int max)
    return (unsigned int)((double)number / ((double)UINT_MAX + 1) * double(max)) + 1;
 }
 
-Panel::Panel(Connor_Socket::Client* client, QWidget *parent) :
+Panel::Panel(Connor_Socket::Client* client, bool is_heat_mode, int default_temp, QWidget *parent) :
     QWidget(parent),
     _client(client),
     _clientThread(new std::thread([this](){
@@ -41,6 +41,13 @@ Panel::Panel(Connor_Socket::Client* client, QWidget *parent) :
     ui(new Ui::Panel)
 {
     ui->setupUi(this);
+
+    ca.is_on = false;
+    ca.is_heat_mode = is_heat_mode;
+    ca.speed = Speed::NORMAL_SPEED;
+    ca.expTemp = ca.temp = ca.original_temp = default_temp;
+    ca.ntfy_frequence = NOTIFY_PERIOD;
+
     InitWidget();
     InitConnect();
 }
@@ -52,24 +59,24 @@ Panel::~Panel()
     delete notifyTimer;
     delete recoveryTimer;
     delete sendTimer;
+    delete updateTimer;
     delete _client;
 }
 
 void Panel::InitWidget() {
     this->setWindowTitle(QString::fromWCharArray(L"从控机"));
     this->setWindowIcon(QIcon(":/server/fan"));
+    this->setFixedHeight(320);
 
-    vwrVLayout = new QVBoxLayout(ui->viewer);
     clientRotationable = new RotationLabel(ROTAIONAL_SIZE, RotateRatio[1], NULL);
-    clientRotationable->resize(ROTAIONAL_SIZE, ROTAIONAL_SIZE);
-    vwrVLayout->addWidget(clientRotationable);
+    ui->fanLayout->addWidget(clientRotationable);
 
-    ca.is_on = false;
-    ca.is_heat_mode = false;
-    ca.speed = Speed::NORMAL_SPEED;
-    ca.expTemp = ca.temp = ca.original_temp = ca.is_heat_mode ?  (int)HeatRange::LOWER_BOUND + Random((int)HeatRange::UPPER_BOUND - (int)HeatRange::LOWER_BOUND)
-              : (int)ColdRange::LOWER_BOUND + Random((int)ColdRange::UPPER_BOUND - (int)ColdRange::LOWER_BOUND);
-    ca.ntfy_frequence = NOTIFY_PERIOD;
+    if (!ca.is_heat_mode)
+        ui->mode_label->setPixmap(QPixmap(":/server/cold"));
+    else
+        ui->mode_label->setPixmap(QPixmap(":/server/warm"));
+
+    ui->expLCD->display(ca.expTemp);
 
     tempTimer = new QTimer();
     notifyTimer = new QTimer();
@@ -93,7 +100,7 @@ void Panel::InitConnect() {
     QObject::connect(this->notifyTimer, SIGNAL(timeout()), this, SLOT(ReportState()));
     QObject::connect(this->recoveryTimer, SIGNAL(timeout()), this, SLOT(RecoverTemp()));
     QObject::connect(this->sendTimer, SIGNAL(timeout()), this, SLOT(ClusterSend()));
-    connect(this->updateTimer, SIGNAL(timeout()), this, SLOT(Update()));
+    QObject::connect(this->updateTimer, SIGNAL(timeout()), this, SLOT(Update()));
 }
 
 
@@ -105,6 +112,11 @@ void Panel::DisableItems() {
     ui->windDown->setEnabled(false);
     ui->modeButton->setEnabled(false);
     ui->switchButton->setEnabled(true);
+    ui->mode_label->setEnabled(false);
+    ui->realLCD->setEnabled(false);
+    ui->expLCD->setEnabled(false);
+    clientRotationable->setEnabled(false);
+
     if (tempTimer->isActive())
         tempTimer->stop();
     if (notifyTimer->isActive())
@@ -122,8 +134,12 @@ void Panel::EnableItems() {
     ui->windUp->setEnabled(true);
     ui->windDown->setEnabled(true);
     ui->modeButton->setEnabled(true);
+    ui->mode_label->setEnabled(true);
+    ui->realLCD->setEnabled(true);
+    ui->expLCD->setEnabled(true);
+    clientRotationable->setEnabled(true);
+
     ui->windSpeed->setText(QString::fromWCharArray(SpeedStr[(int)ca.speed].c_str()));
-    ui->mode_lable->setPixmap(QPixmap(":/server/cold"));
     ui->realLCD->display(ca.temp);
     ui->expLCD->display(ca.expTemp);
     ui->originalTemp->setText(QString::number(ca.original_temp) + QString::fromWCharArray(L" 度"));
@@ -180,19 +196,17 @@ void Panel::WindDownClicked() {
 void Panel::ModeClicked() {
     ca.is_heat_mode = !ca.is_heat_mode;
     QPixmap picture = ca.is_heat_mode ? ":/server/warm" : ":/server/cold";
-    this->ui->mode_lable->setPixmap(picture);
+    this->ui->mode_label->setPixmap(picture);
     ReportState();
 }
 
 void Panel::SwitchClicked() {
-    if (!ca.is_on) {
-        ca.is_on = true;
-        ReportState();
+    ca.is_on = !ca.is_on;
+    ReportState();
+
+    if (ca.is_on)
         EnableItems();
-    }
     else {
-        ca.is_on = false;
-        ReportState();
         DisableItems();
         recoveryTimer->start(TEMP_CHANGE_CIRCUIT / TempInc[(int)Speed::NORMAL_SPEED]);
     }
@@ -228,7 +242,6 @@ void Panel::ReportState() {
     try {
         _client->Send(sendInfo.dump());
     } catch (std::exception e) {
-        delete _client;
         QMessageBox::information(this, "info", "Can not connect server");
         DisableItems();
         this->close();

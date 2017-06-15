@@ -50,6 +50,8 @@ Management::~Management()
 #define ROW 2
 #define COL 4
 void Management::InitWidget() {
+    this->setWindowTitle(QString::fromWCharArray(L"中央空调"));
+    this->setWindowIcon(QIcon(":/server/fan"));
     ui->tempNumber->display(DEFAULT_TEMP);
 
     // 默认未打开电源，按钮均无法使用
@@ -118,14 +120,13 @@ void Management::InitWidget() {
     }
 }
 
-#define MIN_TEMP 16
-#define MAX_TEMP 30
 void Management::InitConnect() {
     connect(ui->tempDownButton, &QPushButton::clicked, [this](){
         if(_server->setting.isHeatMode)
             ui->tempNumber->display(std::max(25, ui->tempNumber->intValue() - 1));
         else
             ui->tempNumber->display(std::max(18, ui->tempNumber->intValue() - 1));
+        _server->setting.setTemperature = ui->tempNumber->intValue();
     });
 
     connect(ui->tempUpButton, &QPushButton::clicked, [this](){
@@ -133,6 +134,7 @@ void Management::InitConnect() {
             ui->tempNumber->display(std::min(30, ui->tempNumber->intValue() + 1));
         else
             ui->tempNumber->display(std::min(25, ui->tempNumber->intValue() + 1));
+        _server->setting.setTemperature = ui->tempNumber->intValue();
     });
 
     connect(ui->checkInButton, &QPushButton::clicked, [this](){
