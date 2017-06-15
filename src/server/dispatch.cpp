@@ -108,8 +108,12 @@ json Dispatcher::StateHandle(json &requestInfo)
         if (isValid && !_parent->Serve(this))
             isValid = false;
 
-        _state.isOn = isValid;
+
     }
+
+    if (!isValid)
+        _parent->StopServe(this);
+    _state.isOn = isValid;
 
     if (isValid) {
         if (_state.speed == LOW_SPEED)

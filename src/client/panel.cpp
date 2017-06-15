@@ -34,7 +34,7 @@ Panel::Panel(Connor_Socket::Client* client, QWidget *parent) :
     _client(client),
     _clientThread(new std::thread([this](){
         while(true) {
-            ReceiveHandle(_client->Receive());
+            ReceiveHandle(json::parse(_client->Receive()));
         }
     })),
     st({0, 0, false, 500}),
@@ -273,7 +273,7 @@ void Panel::Update()
 }
 
 void Panel::ReceiveHandle(json recvInfo) {
-    if (recvInfo["ret"].get<int>() == REPLY_CON) {
+    if (!recvInfo.empty() && recvInfo["ret"].get<int>() == REPLY_CON) {
         st.power = recvInfo["power"].get<double>();
         st.cost = recvInfo["cost"].get<double>();
         st.frequence = recvInfo["frequence"].get<int>();

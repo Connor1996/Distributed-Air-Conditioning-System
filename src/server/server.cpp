@@ -304,6 +304,8 @@ void Server::StopServe(Dispatcher *target) {
         else
             iter++;
     }
+
+    std::cout << "[INFO] stop server, still have " << _servingQueue.size() << std::endl;
 }
 
 
