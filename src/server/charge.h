@@ -21,7 +21,6 @@ public:
     {
         ui->setupUi(this);
         ui->room_id->setText(room_id);
-        ui->user_id->setText(user_id);
         ui->total_time->setText(total_time);
         ui->total_money->setText(total_money);
     }

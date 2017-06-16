@@ -34,6 +34,15 @@ Form::Form(Server *server, QWidget *parent) :
     ui->comboBox_2->addItems(combo_room);
     ui->comboBox_3->addItems(combo_room);
 
+    double room[8];
+    double total = 0;
+    for(int i=0; i<8; i++){
+        room[i] = getcost(411+i);
+        total += room[i];
+    }
+    ui->label->setText("total: " + QString::number(total, 'g', 6));
+    ui->label_2->setText("total: " + QString::number(total, 'g', 6));
+    ui->label_3->setText("total: " + QString::number(total, 'g', 6));
 
     //page1 饼图
     piescene = new QGraphicsScene();
@@ -46,19 +55,19 @@ Form::Form(Server *server, QWidget *parent) :
     pieview->resizeAnchor();
 
     pieSeries = new QPieSeries();
-    pieSeries->append("411", 12);
-    pieSeries->append("412", 12);
-    pieSeries->append("413", 12);
-    pieSeries->append("414", 12);
-    pieSeries->append("415", 12);
-    pieSeries->append("416", 12);
-    pieSeries->append("417", 12);
-    pieSeries->append("418", 16);
+    pieSeries->append("411", room[0]/total);
+    pieSeries->append("412", room[1]/total);
+    pieSeries->append("413", room[2]/total);
+    pieSeries->append("414", room[3]/total);
+    pieSeries->append("415", room[4]/total);
+    pieSeries->append("416", room[5]/total);
+    pieSeries->append("417", room[6]/total);
+    pieSeries->append("418", room[7]/total);
 
     pieChart = new QChart();
     pieChart->addSeries(pieSeries);  // 将 series 添加至图表中
     pieChart->legend()->setAlignment(Qt::AlignRight);  // 设置图例靠右显示
-    pieChart->setTitle("Simple pie chart");
+    pieChart->setTitle("Day Pie Chart");
     pieChart->setGeometry(10, 10, 400, 300);
     piescene->addItem(pieChart);
     //room_cost table
@@ -73,6 +82,11 @@ Form::Form(Server *server, QWidget *parent) :
     ui->costtable->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     ui->costtable->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Fixed);
 
+    for(int i=0; i<8; i++){
+        model3->setItem(i, 0, new QStandardItem(QString::number(411+i)));
+        model3->setItem(i, 1, new QStandardItem(QString::number(room[i], 'g', 6)));
+    }
+
     //page2 折线图
     linescene = new QGraphicsScene();
     lineview = new QGraphicsView(ui->page_6);
@@ -85,15 +99,17 @@ Form::Form(Server *server, QWidget *parent) :
 
     QCategoryAxis *axisX = new QCategoryAxis();
     QCategoryAxis *axisY = new QCategoryAxis();
-    axisY->setRange(0,6);
-    axisX->setRange(1,7);
+    //axisY->setRange(0,6);
+    axisX->setRange(0,7);
 
 
     // 构建 series，作为图表的数据源
     lineseries = new QLineSeries();
-    for(int i=0; i<7; i++){
+    /*for(int i=0; i<7; i++){
         lineseries->append(i+1, i%3);
-    }
+    }*/
+    lineseries->append(0, 0);
+    lineseries->append(1, total);
     lineChart = new QChart();
     lineChart->addSeries(lineseries);  // 将 series 添加至图表中
     lineChart->setAxisX(axisX, lineseries);
@@ -101,7 +117,7 @@ Form::Form(Server *server, QWidget *parent) :
 
     lineChart->legend()->hide();
     lineChart->createDefaultAxes();
-    lineChart->setTitle("Simple line chart");
+    lineChart->setTitle("Week Line Chart");
     lineChart->setGeometry(10, 10, 560, 300);
     linescene->addItem(lineChart);
 
@@ -117,14 +133,16 @@ Form::Form(Server *server, QWidget *parent) :
 
     QCategoryAxis *monthaxisX = new QCategoryAxis();
     QCategoryAxis *monthaxisY = new QCategoryAxis();
-    monthaxisY->setRange(0,6);
+    //monthaxisY->setRange(0,6);
     monthaxisX->setRange(0,30);
     monthaxisX->setLabelFormat("%d");
     // 构建 series，作为图表的数据源
     QLineSeries *monthlineseries = new QLineSeries();
-    for(int i=0; i<31; i++){
+    /*for(int i=0; i<31; i++){
         monthlineseries->append(i, i%6);
-    }
+    }*/
+    monthlineseries->append(0, 0);
+    monthlineseries->append(1, total);
 
     monthlineChart = new QChart();
     monthlineChart->addSeries(monthlineseries);  // 将 series 添加至图表中
@@ -133,7 +151,7 @@ Form::Form(Server *server, QWidget *parent) :
 
     monthlineChart->legend()->hide();
     monthlineChart->createDefaultAxes();
-    monthlineChart->setTitle("Simple line chart");
+    monthlineChart->setTitle("Month Line Chart");
     monthlineChart->setGeometry(10, 10, 560, 300);
     monthlinescene->addItem(monthlineChart);
 }
@@ -205,7 +223,7 @@ void Form::barinit(QWidget *w, int *s){
     barchart->legend()->hide();
     barchart->addSeries(barseries);
     barchart->createDefaultAxes();
-    barchart->setTitle("Simple barchart example");
+    barchart->setTitle("ON/OFF bar chart");
     barchart->setGeometry(20,8,745,330);
 
     QStringList categories;
@@ -275,4 +293,15 @@ void Form::tableinit(QTableView *t, std::vector<Request> data){
         model->setItem(i,5,new QStandardItem(endspeed));
         model->setItem(i,6,new QStandardItem(cost));
     }
+}
+
+double Form::getcost(int r){
+    std::vector<Request> data = _server->GetRoomRequests(r);
+    double total = 0.0;
+    if(data.size()!=0){
+        for(int i=0; i<data.size(); i++){
+            total += data[i].money;
+        }
+    }
+    return total;
 }

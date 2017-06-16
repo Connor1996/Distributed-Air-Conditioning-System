@@ -38,6 +38,7 @@ Panel::Panel(Connor_Socket::Client* client, bool is_heat_mode, int default_temp,
                 ReceiveHandle(json::parse(_client->Receive()));
             } catch (std::exception e) {
                 std::cout << "[ERROR] cannot connect to server" << std::endl;
+                break;
             }
         }
     })),

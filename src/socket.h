@@ -23,7 +23,7 @@ namespace Connor_Socket
 #define DEFAULT_BUFLEN 512        // Socket传输缓冲区大小
 
 #define CLIENT_PORT 5150            // 客户端连接端口
-#define SERVER_PORT 6666            // 服务器监听端口
+#define SERVER_PORT 6665            // 服务器监听端口
 
 
 //#define _REMOTE_

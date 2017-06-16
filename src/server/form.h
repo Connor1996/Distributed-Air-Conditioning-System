@@ -42,6 +42,7 @@ public:
 
     void barinit(QWidget *w, int *s);
     void tableinit(QTableView *t, std::vector<Request> data);
+    double getcost(int r);
     ~Form();
 
 private:

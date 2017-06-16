@@ -16,14 +16,16 @@ using namespace ORMLite;
 Server::Server()
     : setting({false, false, 25, 1, 500}),
       _persistThread(new std::thread([this](){
-        std::this_thread::sleep_for(std::chrono::seconds(10));
 
-        // 使用_dispatchers是为了只检测可能更新的roomId
-        for (const auto& pair : _dispatchers) {
-            if (!PersistRoomRecord(pair.first))
-                std::cout << "[ERROR] record " << pair.first << " unsuccessful" << std::endl;
+        while(true) {
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+
+            // 使用_dispatchers是为了只检测可能更新的roomId
+            for (const auto& pair : _dispatchers) {
+                if (!PersistRoomRecord(pair.first))
+                    std::cout << "[ERROR] record " << pair.first << " unsuccessful" << std::endl;
+            }
         }
-
       })),
       _count(0)
 {
@@ -66,6 +68,7 @@ bool Server::PersistRoomRecord(int roomId) {
     RoomInfo helper;
     QueryMessager<RoomInfo> messager(helper);
 
+    std::cout << "[INFO] persist " << roomId << "records" << std::endl;
 
     auto& record = _rooms[roomId].second;
 
@@ -77,8 +80,10 @@ bool Server::PersistRoomRecord(int roomId) {
         if (messager.GetVector().size() == 0) {
             helper.count = record.count;
             helper.room_id = roomId;
+            std::cout << "[INFO] insert " << roomId << "first record ";
             if (!mapper.Insert(helper))
                 return false;
+            std::cout << "successful" << std::endl;
         }
         else {
             int count = record.count;
@@ -149,7 +154,7 @@ int Server::GetRoomCount(int roomId) {
 
     auto result = mapper.Query(messager
                                     .Where(Field(helper.room_id) == roomId));
-    if (result)
+    if (result && messager.GetVector().size() != 0)
         return std::stoi(messager.GetVector()[0][1]);
     else
         return 0;
@@ -272,6 +277,9 @@ bool Server::CheckOut(int roomId) {
     if (_rooms.find(roomId) == _rooms.end())
         return false;
     else {
+        this->StopServe(_dispatchers[roomId]);
+        this->Offline(roomId);
+
         _rooms.erase(roomId);
         return true;
     }
