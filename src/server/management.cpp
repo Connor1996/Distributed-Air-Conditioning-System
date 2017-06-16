@@ -61,6 +61,7 @@ void Management::InitWidget() {
     ui->modeButton->setEnabled(false);
 
     ui->modeLabel->setPixmap(QPixmap(":/server/cold"));
+    _server->setting.setTemperature = 22;
     ui->modeLabel->setEnabled(false);
 
 
@@ -143,6 +144,7 @@ void Management::InitConnect() {
             roomId = ui->roomId->currentText().toInt();
         } catch (std::exception) {
             QMessageBox::information(this, "info", "please input digital roomid");
+            return;
         }
 
         std::string userId = ui->userIdEdit->text().toStdString();

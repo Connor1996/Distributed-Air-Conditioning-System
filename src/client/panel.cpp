@@ -34,7 +34,11 @@ Panel::Panel(Connor_Socket::Client* client, bool is_heat_mode, int default_temp,
     _client(client),
     _clientThread(new std::thread([this](){
         while(true) {
-            ReceiveHandle(json::parse(_client->Receive()));
+            try {
+                ReceiveHandle(json::parse(_client->Receive()));
+            } catch (std::exception e) {
+                std::cout << "[ERROR] cannot connect to server" << std::endl;
+            }
         }
     })),
     st({0, 0, false, 500}),
@@ -253,6 +257,8 @@ void Panel::Update()
 {
     ui->power->setText(QString::number(st.power) + QString::fromWCharArray(L" 瓦特"));
     ui->cost->setText(QString::number(st.cost) + QString::fromWCharArray(L" 元"));
+    ca.ntfy_frequence = std::max(100, ca.ntfy_frequence);
+
     if (ca.is_on && !notifyTimer->isActive()) {
         ca.ntfy_frequence = st.frequence;
         notifyTimer->start(ca.ntfy_frequence);
